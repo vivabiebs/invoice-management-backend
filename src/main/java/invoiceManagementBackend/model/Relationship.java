@@ -1,12 +1,13 @@
 package invoiceManagementBackend.model;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.sql.Timestamp;
 
-@Getter
-@Setter
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Relationship {
     private int id;
     private String payerId;
@@ -14,4 +15,6 @@ public class Relationship {
     private String status;
     private Timestamp createdAt;
     private Timestamp deletedAt;
+    private Timestamp updatedAt;
+
 }

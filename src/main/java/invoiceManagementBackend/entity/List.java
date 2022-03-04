@@ -1,18 +1,20 @@
 package invoiceManagementBackend.entity;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
 
 @Entity
 @Table(name = "list")
-@Getter
-@Setter
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class List {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(unique = true)
     private int id;
     private int quantity;
     private double amount;
@@ -20,6 +22,7 @@ public class List {
     private String description;
     private Timestamp createdAt;
     private Timestamp deletedAt;
+    private Timestamp updatedAt;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "invoice_id")

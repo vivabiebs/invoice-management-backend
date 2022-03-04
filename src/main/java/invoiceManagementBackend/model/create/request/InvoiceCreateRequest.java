@@ -1,13 +1,14 @@
 package invoiceManagementBackend.model.create.request;
 
 import invoiceManagementBackend.entity.List;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.sql.Date;
 
-@Getter
-@Setter
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class InvoiceCreateRequest {
     private int billerId;
     private int payerId;

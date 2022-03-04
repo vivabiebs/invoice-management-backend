@@ -44,7 +44,7 @@ public class NotificationService {
         notification.setBiller(biller);
         notification.setPayer(payer);
         notification.setInvoice(invoice);
-        notification.setUnread(false);
+        notification.setUnread(true);
         notification.setCreatedAt(Timestamp.valueOf(LocalDateTime.now()));
 
         String invoiceId = String.valueOf(notification.getInvoice().getId());
@@ -59,9 +59,11 @@ public class NotificationService {
             case CommonConstant.INVOICE_CANCELLED:
                 notification.setMessage("ใบแจ้งหนี้เลขที่".concat(invoiceId).concat("ได้ถูกยกเลิกแล้ว"));
                 break;
-//            default:
             case CommonConstant.CORRECTION_REQUEST:
                 notification.setMessage("ใบแจ้งหนี้เลขที่".concat(invoiceId).concat("ได้มีการส่งคำร้องเพื่อขอแก้ไขแล้ว"));
+                break;
+            default:
+                notification.setMessage("ใบแจ้งหนี้เลขที่".concat(invoiceId).concat("ได้เกินกำหนดชำระแล้ว"));
                 break;
         }
         notificationRepository.save(notification);
@@ -70,7 +72,8 @@ public class NotificationService {
     public NotificationInquiryResponse getNotifications(NotificationInquiryRequest request) {
         NotificationInquiryResponse response = new NotificationInquiryResponse();
         List<Notification> notifications = new ArrayList<>();
-        List<NotificationInquiryResponse.NotificationDetailInquiryResponse> notificationResponses = new ArrayList<>();
+        List<NotificationInquiryResponse.NotificationDetailInquiryResponse>
+                notificationResponses = new ArrayList<>();
         Sort sortBy = Sort.by(Sort.Direction.DESC, "createdAt");
         if (!(ObjectUtils.isEmpty(request.getPayerId()) && ObjectUtils.isEmpty(request.getBillerId()))) {
             Biller biller = billerService.getBiller(request.getBillerId());
@@ -85,6 +88,8 @@ public class NotificationService {
         }
         notifications.forEach(notification -> {
             notification.setUnread(false);
+            notificationRepository.save(notification);
+
             NotificationInquiryResponse.NotificationDetailInquiryResponse notificationDetailInquiryResponse =
                     new NotificationInquiryResponse.NotificationDetailInquiryResponse();
             notificationDetailInquiryResponse.setId(notification.getId());

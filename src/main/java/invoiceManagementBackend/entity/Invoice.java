@@ -1,7 +1,6 @@
 package invoiceManagementBackend.entity;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import java.sql.Date;
@@ -9,12 +8,17 @@ import java.sql.Timestamp;
 import java.util.Set;
 
 @Entity
-@Table(name = "invoice")
-@Getter
-@Setter
+@Table(name = "invoice", uniqueConstraints = {
+        @UniqueConstraint(columnNames = "id")
+})
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Invoice {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(unique = true)
     private int id;
     private double totalAmount;
     private double totalAmountAddedTax;
@@ -26,6 +30,7 @@ public class Invoice {
     private Timestamp paidAt;
     private Timestamp cancelledAt;
     private Timestamp correctionRequestSentAt;
+    private Timestamp updatedAt;
     private String correctionRequest;
 
     @OneToMany(mappedBy = "invoice")

@@ -5,8 +5,9 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class CommonConstant {
-    public static final String INVOICE_CREATED = "INVOICE_CREATED";
-    public static final String INVOICE_PAID = "INVOICE_PAID";
-    public static final String INVOICE_CANCELLED = "INVOICE_CANCELLED";
-    public static final String CORRECTION_REQUEST = "CORRECTION_REQUEST";
+    public static final String INVOICE_CREATED = "processing";
+    public static final String INVOICE_PAID = "paid";
+    public static final String INVOICE_CANCELLED = "cancelled";
+    public static final String CORRECTION_REQUEST = "correctionRequested";
+    public static final String OVERDUE = "overdue";
 }

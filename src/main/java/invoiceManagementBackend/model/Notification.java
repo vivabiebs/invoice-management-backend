@@ -1,12 +1,13 @@
 package invoiceManagementBackend.model;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.sql.Timestamp;
 
-@Getter
-@Setter
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Notification {
     private int id;
     private String billerId;

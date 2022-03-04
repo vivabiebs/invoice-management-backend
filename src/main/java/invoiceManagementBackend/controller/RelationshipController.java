@@ -1,6 +1,7 @@
 package invoiceManagementBackend.controller;
 
 import invoiceManagementBackend.model.create.request.RelationshipCreateRequest;
+import invoiceManagementBackend.model.update.request.RelationShipStatusUpdateRequest;
 import invoiceManagementBackend.service.RelationshipService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,12 @@ public class RelationshipController {
     @PostMapping("/relationship-create")
     public ResponseEntity<String> relationshipCreate(@RequestBody RelationshipCreateRequest request) {
         relationshipService.addRelationship(request);
+        return ResponseEntity.ok("ok relationship");
+    }
+
+    @PostMapping("/relationship-status-update")
+    public ResponseEntity<String> relationshipStatusUpdate(@RequestBody RelationShipStatusUpdateRequest request) {
+        relationshipService.updateStatus(request);
         return ResponseEntity.ok("ok relationship");
     }
 }

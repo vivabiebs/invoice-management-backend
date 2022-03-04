@@ -1,12 +1,13 @@
 package invoiceManagementBackend.model;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.sql.Timestamp;
 
-@Getter
-@Setter
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Biller {
     private int id;
     private String name;
@@ -26,4 +27,5 @@ public class Biller {
     private String code;
     private Timestamp createdAt;
     private Timestamp deletedAt;
+    private Timestamp updatedAt;
 }

@@ -1,20 +1,27 @@
 package invoiceManagementBackend.entity;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
-import java.util.Set;
+import java.util.List;
 
 @Entity
-@Table(name = "biller")
-@Getter
-@Setter
+@Table(name = "biller", uniqueConstraints = {
+        @UniqueConstraint(columnNames = "id"),
+        @UniqueConstraint(columnNames = "username"),
+        @UniqueConstraint(columnNames = "citizenId"),
+        @UniqueConstraint(columnNames = "taxId"),
+        @UniqueConstraint(columnNames = "code"),
+        @UniqueConstraint(columnNames = "phone")
+})
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Biller {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-//    @Column(unique = true)
     private int id;
     private String name;
     private String lastname;
@@ -33,13 +40,15 @@ public class Biller {
     private String code;
     private Timestamp createdAt;
     private Timestamp deletedAt;
+    private Timestamp updatedAt;
 
     @OneToMany(mappedBy = "biller")
-    private Set<Relationship> relationships;
+    private List<Relationship> relationships;
 
     @OneToMany(mappedBy = "biller")
-    private Set<Invoice> invoices;
+    private List<Invoice> invoices;
 
-    @OneToMany(mappedBy = "invoice")
-    private Set<Notification> notifications;
+    @OneToMany(mappedBy = "biller")
+    private List<Notification> notifications;
+
 }

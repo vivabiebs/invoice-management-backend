@@ -1,18 +1,22 @@
 package invoiceManagementBackend.entity;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
 
 @Entity
-@Table(name = "relationship")
-@Getter
-@Setter
+@Table(name = "relationship", uniqueConstraints = {
+        @UniqueConstraint(columnNames = "id")
+})
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Relationship {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(unique = true)
     private int id;
     private String status;
 
@@ -26,4 +30,6 @@ public class Relationship {
 
     private Timestamp createdAt;
     private Timestamp deletedAt;
+    private Timestamp updatedAt;
+
 }

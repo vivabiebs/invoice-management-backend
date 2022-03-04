@@ -1,4 +1,4 @@
-package invoiceManagementBackend.model.create.request;
+package invoiceManagementBackend.model.inquiry.request;
 
 import lombok.*;
 
@@ -6,7 +6,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class RelationshipCreateRequest {
+public class InvoiceInquiryRequest {
     private int billerId;
     private int payerId;
 }

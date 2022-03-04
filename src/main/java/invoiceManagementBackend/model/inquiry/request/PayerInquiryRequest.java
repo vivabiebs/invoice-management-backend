@@ -6,7 +6,6 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class NotificationInquiryRequest {
+public class PayerInquiryRequest {
     private int billerId;
-    private int payerId;
 }

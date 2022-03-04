@@ -1,17 +1,20 @@
 package invoiceManagementBackend.model.inquiry.response;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.List;
 
-@Getter
-@Setter
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class NotificationInquiryResponse {
     private List<NotificationDetailInquiryResponse> notifications;
 
-    @Getter
-    @Setter
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class NotificationDetailInquiryResponse {
         private int id;
         private int billerId;

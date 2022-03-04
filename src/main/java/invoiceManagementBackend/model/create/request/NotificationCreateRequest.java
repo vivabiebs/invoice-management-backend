@@ -1,10 +1,11 @@
 package invoiceManagementBackend.model.create.request;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
-@Getter
-@Setter
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class NotificationCreateRequest {
     private String message;
     private int billerId;

@@ -1,20 +1,22 @@
 package invoiceManagementBackend.entity;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
 
 @Entity
-@Table(name = "notification")
-@Getter
-@Setter
+@Table(name = "notification", uniqueConstraints = {
+        @UniqueConstraint(columnNames = "id")
+})
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Notification {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
-
     private String message;
     private boolean isUnread;
 
