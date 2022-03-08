@@ -6,6 +6,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class InvoicePaymentRequest {
-    private int id;
+public class GetTokenRequest {
+    private String applicationKey;
+    private String applicationSecret;
 }

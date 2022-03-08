@@ -1,0 +1,23 @@
+# Configuration for outbound API calls
+invoice-management:
+  core:
+    api-key: l755c9187db6c147849831ee300b530487
+    api-secret: d62bd789d9bc4cf2bd4570f70d78bf7f
+
+user-defined:
+  api:
+    version: 1
+    # Global endpoint url base
+    global-endpoint-base: v${user-defined.api.version}/invoice-management
+    endpoints:
+      chaiyocare-customers: ${user-defined.api.global-endpoint-base}
+
+  external:
+    scb:
+      url: https://api-sandbox.partners.scb/partners/sandbox
+      api:
+        version: 1
+        endpoints:
+          auth: /v${user-defined.external.scb.api.version}/oauth/token
+          create-qr: /v${user-defined.external.scb.api.version}/payment/qrcode/create
+          slip-verification: /v${user-defined.external.scb.api.version}/payment/billpayment/transactions
