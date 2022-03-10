@@ -1,5 +1,7 @@
 package invoiceManagementBackend.service;
 
+import invoiceManagementBackend.config.restTemplateErrorHandler.RestTemplateResponseErrorHandler;
+import invoiceManagementBackend.entity.Invoice;
 import invoiceManagementBackend.model.payment.request.CreateQrCodeRequest;
 import invoiceManagementBackend.model.payment.request.GetTokenRequest;
 import invoiceManagementBackend.model.payment.request.ScbCreateQrCodeRequest;
@@ -7,6 +9,8 @@ import invoiceManagementBackend.model.payment.response.CreateQrCodeResponse;
 import invoiceManagementBackend.model.payment.response.GetTokenResponse;
 import invoiceManagementBackend.model.payment.slipVerify.request.SlipVerificationRequest;
 import invoiceManagementBackend.model.payment.slipVerify.response.SlipVerificationResponse;
+import invoiceManagementBackend.repository.InvoiceRepository;
+import invoiceManagementBackend.util.CommonConstant;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +20,8 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.UUID;
@@ -25,6 +31,12 @@ import java.util.UUID;
 public class PaymentService {
     @Autowired
     RestTemplate restTemplate;
+
+    @Autowired
+    InvoiceService invoiceService;
+
+    @Autowired
+    InvoiceRepository invoiceRepository;
 
     @Value("${user-defined.external.scb.url}")
     private String scbSandboxRequestUrl;
@@ -43,6 +55,10 @@ public class PaymentService {
 
     @Value("${user-defined.external.scb.api.endpoints.slip-verification}")
     private String slipVerify;
+
+    public PaymentService(RestTemplate restTemplate) {
+        restTemplate.setErrorHandler(new RestTemplateResponseErrorHandler());
+    }
 
     public CreateQrCodeResponse createQrCode(CreateQrCodeRequest request) {
         var uuid = UUID.randomUUID().toString();
@@ -84,6 +100,7 @@ public class PaymentService {
 
         Objects.requireNonNull(qrResponse.getBody()).setUuid(uuid);
         Objects.requireNonNull(qrResponse.getBody()).setToken(token);
+        Objects.requireNonNull(qrResponse.getBody()).setInvoiceId(request.getInvoiceId());
 
         return qrResponse.getBody();
     }
@@ -117,6 +134,15 @@ public class PaymentService {
         HttpEntity<Object> requestHttpEntity = new HttpEntity<>(headers);
         ResponseEntity<SlipVerificationResponse> response = restTemplate
                 .exchange(url, HttpMethod.GET, requestHttpEntity, SlipVerificationResponse.class);
+
+        Timestamp now = Timestamp.valueOf(LocalDateTime.now());
+
+        if (Objects.requireNonNull(response.getBody()).getStatus().getCode().equals("1000")) {
+            Invoice invoice = invoiceService.getInvoice(request.getInvoiceId());
+            invoice.setPaidAt(now);
+            invoice.setStatus(CommonConstant.INVOICE_PAID);
+            invoiceRepository.save(invoice);
+        }
 
         return response.getBody();
     }

@@ -13,4 +13,5 @@ public class SlipVerificationRequest {
     private String transRef;
     private String uuid;
     private String token;
+    private int invoiceId;
 }

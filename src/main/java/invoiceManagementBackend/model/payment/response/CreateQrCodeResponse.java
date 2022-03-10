@@ -14,6 +14,7 @@ public class CreateQrCodeResponse {
     private QrData data;
     private String uuid;
     private String token;
+    private int invoiceId;
 
     @Data
     @Builder
