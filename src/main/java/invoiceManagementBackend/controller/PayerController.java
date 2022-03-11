@@ -1,6 +1,6 @@
 package invoiceManagementBackend.controller;
 
-import invoiceManagementBackend.model.create.request.UserCreateRequest;
+import invoiceManagementBackend.model.authentication.register.request.UserCreateRequest;
 import invoiceManagementBackend.model.inquiry.detailInquiry.request.UserDetailInquiryRequest;
 import invoiceManagementBackend.model.inquiry.detailInquiry.response.PayerDetailInquiryResponse;
 import invoiceManagementBackend.model.inquiry.request.PayerInquiryRequest;
@@ -20,7 +20,7 @@ public class PayerController {
     PayerService payerService;
 
     @PostMapping("/payer-create")
-    public ResponseEntity<String> billerCreate(@RequestBody UserCreateRequest request) {
+    public ResponseEntity<String> payerCreate(@RequestBody UserCreateRequest request) {
         payerService.createPayer(request);
         return ResponseEntity.ok("okokok payer");
     }

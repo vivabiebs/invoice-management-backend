@@ -28,7 +28,7 @@ public class RelationshipService {
 
     public void addRelationship(RelationshipCreateRequest request) {
         Relationship relationship = new Relationship();
-        Biller biller = billerService.getBiller(request.getBillerId());
+        Biller biller = billerService.getBillerByCode(request.getCode());
         Payer payer = payerService.getPayer(request.getPayerId());
         relationship.setBiller(biller);
         relationship.setPayer(payer);

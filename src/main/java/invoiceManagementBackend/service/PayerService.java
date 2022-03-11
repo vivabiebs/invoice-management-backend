@@ -3,7 +3,7 @@ package invoiceManagementBackend.service;
 import invoiceManagementBackend.entity.Biller;
 import invoiceManagementBackend.entity.Payer;
 import invoiceManagementBackend.entity.Relationship;
-import invoiceManagementBackend.model.create.request.UserCreateRequest;
+import invoiceManagementBackend.model.authentication.register.request.UserCreateRequest;
 import invoiceManagementBackend.model.inquiry.detailInquiry.request.UserDetailInquiryRequest;
 import invoiceManagementBackend.model.inquiry.detailInquiry.response.PayerDetailInquiryResponse;
 import invoiceManagementBackend.model.inquiry.request.PayerInquiryRequest;

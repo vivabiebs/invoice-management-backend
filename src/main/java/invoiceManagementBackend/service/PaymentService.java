@@ -86,7 +86,7 @@ public class PaymentService {
         var scbRequest = ScbCreateQrCodeRequest.builder()
                 .qrType("PP")
                 .ppType("BILLERID")
-                .ppId(request.getPpId())
+                .ppId("854459245937662")
                 .amount(request.getAmount())
                 .ref1(generateRefNumber())
                 .ref2(generateRefNumber())

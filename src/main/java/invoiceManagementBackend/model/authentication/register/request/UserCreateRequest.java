@@ -1,6 +1,9 @@
-package invoiceManagementBackend.model.create.request;
+package invoiceManagementBackend.model.authentication.register.request;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Builder
@@ -21,5 +24,6 @@ public class UserCreateRequest {
     private String zipCode;
     private String username;
     private String password;
+    private String role;
 }
 

@@ -8,13 +8,11 @@ import invoiceManagementBackend.model.landing.LandingRequest;
 import invoiceManagementBackend.repository.InvoiceRepository;
 import invoiceManagementBackend.util.CommonConstant;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
 import java.sql.Timestamp;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -41,17 +39,9 @@ public class LandingService {
 
     public void landing(LandingRequest request) {
         Timestamp now = Timestamp.valueOf(LocalDateTime.now());
-//        int userId;
+
         List<Invoice> invoices = new ArrayList<>();
-//        if (!(ObjectUtils.isEmpty(request.getPayerId()))) {
-//            Payer payer = payerService.getPayer(request.getPayerId());
-//            userId = payer.getId();
-//            invoices = payer.getInvoices();
-//        } else if (!ObjectUtils.isEmpty(request.getBillerId())) {
-//            Biller biller = billerService.getBiller(request.getBillerId());
-////            userId = biller.getId();
-//            invoices = biller.getInvoices();
-//        }
+
 
         if (!(billerService.getBillerByUsername(request.getUsername()) == null)) {
             Biller biller = billerService.getBillerByUsername(request.getUsername());
@@ -64,7 +54,6 @@ public class LandingService {
         }
 
         invoices.forEach(invoice -> {
-//            if (now.after(invoice.getDueDate())) {
             if (invoice.getDueDate().before(Date.valueOf(LocalDate.now()))) {
                 invoice.setStatus("overdue");
                 invoiceRepository.save(invoice);

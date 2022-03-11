@@ -1,6 +1,9 @@
 package invoiceManagementBackend.entity;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
@@ -41,6 +44,7 @@ public class Biller {
     private Timestamp createdAt;
     private Timestamp deletedAt;
     private Timestamp updatedAt;
+    private String sessionId;
 
     @OneToMany(mappedBy = "biller")
     private List<Relationship> relationships;

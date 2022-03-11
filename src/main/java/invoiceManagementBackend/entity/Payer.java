@@ -1,11 +1,13 @@
 package invoiceManagementBackend.entity;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Table(name = "payer", uniqueConstraints = {
@@ -42,6 +44,7 @@ public class Payer {
     private Timestamp createdAt;
     private Timestamp deletedAt;
     private Timestamp updatedAt;
+    private String sessionId;
 
     @OneToMany(mappedBy = "payer")
     private List<Relationship> relationships;

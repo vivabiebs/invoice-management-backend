@@ -1,4 +1,4 @@
-package invoiceManagementBackend.model.create.request;
+package invoiceManagementBackend.model.authentication.login.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class RelationshipCreateRequest {
-    private String code;
-    private int payerId;
+public class UserLoginRequest {
+    private String username;
+    private String password;
 }

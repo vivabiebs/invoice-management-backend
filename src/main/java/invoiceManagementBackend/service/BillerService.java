@@ -3,7 +3,7 @@ package invoiceManagementBackend.service;
 import invoiceManagementBackend.entity.Biller;
 import invoiceManagementBackend.entity.Payer;
 import invoiceManagementBackend.entity.Relationship;
-import invoiceManagementBackend.model.create.request.UserCreateRequest;
+import invoiceManagementBackend.model.authentication.register.request.UserCreateRequest;
 import invoiceManagementBackend.model.inquiry.detailInquiry.request.UserDetailInquiryRequest;
 import invoiceManagementBackend.model.inquiry.detailInquiry.response.BillerDetailInquiryResponse;
 import invoiceManagementBackend.model.inquiry.request.BillerInquiryRequest;
@@ -90,6 +90,10 @@ public class BillerService {
         return billerRepository.findByUsername(username);
     }
 
+    public Biller getBillerByCode(String code) {
+        return billerRepository.findByCode(code);
+    }
+
     public BillerInquiryResponse inquiryBiller(BillerInquiryRequest request) {
         Payer payer = payerService.getPayer(request.getPayerId());
         List<Relationship> relationships = relationshipService.getRelationshipByPayer(payer);
@@ -129,23 +133,23 @@ public class BillerService {
         Biller biller = billerRepository.findById(request.getId());
 
         return BillerDetailInquiryResponse.builder()
-        .id(biller.getId())
-        .name(biller.getName())
-        .lastname(biller.getLastname())
-        .phone(biller.getPhone())
-        .citizenId(biller.getCitizenId())
-        .taxId(biller.getTaxId())
-        .addressDetail(biller.getAddressDetail())
-        .road(biller.getRoad())
-        .subDistrict(biller.getSubDistrict())
-        .province(biller.getProvince())
-        .zipCode(biller.getZipCode())
-        .username(biller.getUsername())
-        .password(biller.getPassword())
-        .code(biller.getCode())
-        .createdAt(biller.getCreatedAt())
-        .updatedAt(biller.getUpdatedAt())
-        .deletedAt(biller.getDeletedAt()).build();
+                .id(biller.getId())
+                .name(biller.getName())
+                .lastname(biller.getLastname())
+                .phone(biller.getPhone())
+                .citizenId(biller.getCitizenId())
+                .taxId(biller.getTaxId())
+                .addressDetail(biller.getAddressDetail())
+                .road(biller.getRoad())
+                .subDistrict(biller.getSubDistrict())
+                .province(biller.getProvince())
+                .zipCode(biller.getZipCode())
+                .username(biller.getUsername())
+                .password(biller.getPassword())
+                .code(biller.getCode())
+                .createdAt(biller.getCreatedAt())
+                .updatedAt(biller.getUpdatedAt())
+                .deletedAt(biller.getDeletedAt()).build();
     }
 }
 

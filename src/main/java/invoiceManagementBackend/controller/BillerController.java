@@ -1,6 +1,6 @@
 package invoiceManagementBackend.controller;
 
-import invoiceManagementBackend.model.create.request.UserCreateRequest;
+import invoiceManagementBackend.model.authentication.register.request.UserCreateRequest;
 import invoiceManagementBackend.model.inquiry.detailInquiry.request.UserDetailInquiryRequest;
 import invoiceManagementBackend.model.inquiry.detailInquiry.response.BillerDetailInquiryResponse;
 import invoiceManagementBackend.model.inquiry.request.BillerInquiryRequest;
