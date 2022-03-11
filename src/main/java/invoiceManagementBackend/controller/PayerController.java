@@ -5,6 +5,7 @@ import invoiceManagementBackend.model.inquiry.detailInquiry.request.UserDetailIn
 import invoiceManagementBackend.model.inquiry.detailInquiry.response.PayerDetailInquiryResponse;
 import invoiceManagementBackend.model.inquiry.request.PayerInquiryRequest;
 import invoiceManagementBackend.model.inquiry.response.PayerInquiryResponse;
+import invoiceManagementBackend.model.update.request.UserUpdateRequest;
 import invoiceManagementBackend.service.PayerService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,9 +20,9 @@ public class PayerController {
     @Autowired
     PayerService payerService;
 
-    @PostMapping("/payer-create")
-    public ResponseEntity<String> payerCreate(@RequestBody UserCreateRequest request) {
-        payerService.createPayer(request);
+    @PostMapping("/payer-update")
+    public ResponseEntity<String> payerUpdate(@RequestBody UserUpdateRequest request) {
+        payerService.updatePayer(request);
         return ResponseEntity.ok("okokok payer");
     }
 

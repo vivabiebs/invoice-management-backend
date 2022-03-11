@@ -8,6 +8,7 @@ import invoiceManagementBackend.model.inquiry.detailInquiry.request.UserDetailIn
 import invoiceManagementBackend.model.inquiry.detailInquiry.response.BillerDetailInquiryResponse;
 import invoiceManagementBackend.model.inquiry.request.BillerInquiryRequest;
 import invoiceManagementBackend.model.inquiry.response.BillerInquiryResponse;
+import invoiceManagementBackend.model.update.request.UserUpdateRequest;
 import invoiceManagementBackend.repository.BillerRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -32,13 +33,13 @@ public class BillerService {
     @Autowired
     RelationshipService relationshipService;
 
-    public void createBiller(UserCreateRequest request) {
-        Biller biller = Biller.builder().build();
-        String code = this.generateCode();
+    public void updateBiller(UserUpdateRequest request) {
         Timestamp now = Timestamp.valueOf(LocalDateTime.now());
 
         //update
         if (!(billerRepository.findByCitizenId(request.getCitizenId()) == null)) {
+            var biller = Biller.builder().build();
+
             biller = billerRepository.findByCitizenId(request.getCitizenId());
             biller.setName(request.getName());
             biller.setLastname(request.getLastname());
@@ -49,33 +50,12 @@ public class BillerService {
             biller.setDistrict(request.getDistrict());
             biller.setProvince(request.getProvince());
             biller.setZipCode(request.getZipCode());
-            biller.setUsername(request.getUsername());
-            biller.setPassword(request.getPassword());
             biller.setUpdatedAt(now);
+            billerRepository.save(biller);
         }
-        // create
-        else {
-            biller.setName(request.getName());
-            biller.setLastname(request.getLastname());
-            biller.setPhone(request.getPhone());
-            biller.setIsCitizen(request.getIsCitizen());
-            biller.setCitizenId(request.getCitizenId());
-            biller.setTaxId(request.getTaxId());
-            biller.setAddressDetail(request.getAddressDetail());
-            biller.setRoad(request.getRoad());
-            biller.setSubDistrict(request.getSubDistrict());
-            biller.setDistrict(request.getDistrict());
-            biller.setProvince(request.getProvince());
-            biller.setZipCode(request.getZipCode());
-            biller.setUsername(request.getUsername());
-            biller.setPassword(request.getPassword());
-            biller.setCode(code);
-            biller.setCreatedAt(now);
-        }
-        billerRepository.save(biller);
     }
 
-    private String generateCode() {
+    public String generateCode() {
         int length = 10;
         boolean useLetters = true;
         boolean useNumbers = true;
@@ -86,9 +66,9 @@ public class BillerService {
         return billerRepository.findById(id);
     }
 
-    public Biller getBillerByUsername(String username) {
-        return billerRepository.findByUsername(username);
-    }
+//    public Biller getBillerByUsername(String username) {
+//        return billerRepository.findByUsername(username);
+//    }
 
     public Biller getBillerByCode(String code) {
         return billerRepository.findByCode(code);
@@ -118,7 +98,7 @@ public class BillerService {
                     .district(biller.getDistrict())
                     .province(biller.getProvince())
                     .zipCode(biller.getZipCode())
-                    .username(biller.getUsername())
+//                    .username(biller.getUsername())
                     .createdAt(biller.getCreatedAt())
                     .updatedAt(biller.getUpdatedAt())
                     .deletedAt(biller.getDeletedAt()).build();
@@ -144,8 +124,8 @@ public class BillerService {
                 .subDistrict(biller.getSubDistrict())
                 .province(biller.getProvince())
                 .zipCode(biller.getZipCode())
-                .username(biller.getUsername())
-                .password(biller.getPassword())
+//                .username(biller.getUsername())
+//                .password(biller.getPassword())
                 .code(biller.getCode())
                 .createdAt(biller.getCreatedAt())
                 .updatedAt(biller.getUpdatedAt())

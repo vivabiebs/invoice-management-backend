@@ -2,9 +2,16 @@ package invoiceManagementBackend.util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.RandomStringUtils;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class CommonUtil {
+    public static String generateCode() {
+        int length = 10;
+        boolean useLetters = true;
+        boolean useNumbers = true;
+        return RandomStringUtils.random(length, useLetters, useNumbers);
+    }
 
 //    public String numsToThaiWord(double number) {
 //        String numberToString = String.valueOf(number);
@@ -23,37 +30,37 @@ public class CommonUtil {
 //        return thaiWord.concat("บาทถ้วน");
 //    }
 
-    public String numToWord(String num) {
-        String thaiWord = "";
-        switch (num) {
-            case "1":
-                thaiWord = "หนึ่ง";
-                break;
-            case "2":
-                thaiWord = "สอง";
-                break;
-            case "3":
-                thaiWord = "สาม";
-                break;
-            case "4":
-                thaiWord = "สี่";
-                break;
-            case "5":
-                thaiWord = "ห้า";
-                break;
-            case "6":
-                thaiWord = "หก";
-                break;
-            case "7":
-                thaiWord = "เจ็ด";
-                break;
-            case "8":
-                thaiWord = "แปด";
-                break;
-            case "9":
-                thaiWord = "เก้า";
-                break;
-        }
-        return thaiWord;
-    }
+//    public String numToWord(String num) {
+//        String thaiWord = "";
+//        switch (num) {
+//            case "1":
+//                thaiWord = "หนึ่ง";
+//                break;
+//            case "2":
+//                thaiWord = "สอง";
+//                break;
+//            case "3":
+//                thaiWord = "สาม";
+//                break;
+//            case "4":
+//                thaiWord = "สี่";
+//                break;
+//            case "5":
+//                thaiWord = "ห้า";
+//                break;
+//            case "6":
+//                thaiWord = "หก";
+//                break;
+//            case "7":
+//                thaiWord = "เจ็ด";
+//                break;
+//            case "8":
+//                thaiWord = "แปด";
+//                break;
+//            case "9":
+//                thaiWord = "เก้า";
+//                break;
+//        }
+//        return thaiWord;
+//    }
 }

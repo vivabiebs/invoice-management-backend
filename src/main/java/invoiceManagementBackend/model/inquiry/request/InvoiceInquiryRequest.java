@@ -9,4 +9,5 @@ import lombok.*;
 public class InvoiceInquiryRequest {
     private int billerId;
     private int payerId;
+    private String status;
 }

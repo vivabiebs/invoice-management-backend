@@ -12,7 +12,7 @@ import java.util.List;
 @Entity
 @Table(name = "payer", uniqueConstraints = {
         @UniqueConstraint(columnNames = "id"),
-        @UniqueConstraint(columnNames = "username"),
+//        @UniqueConstraint(columnNames = "username"),
         @UniqueConstraint(columnNames = "citizenId"),
         @UniqueConstraint(columnNames = "taxId"),
         @UniqueConstraint(columnNames = "code"),
@@ -38,13 +38,14 @@ public class Payer {
     private String district;
     private String province;
     private String zipCode;
-    private String username;
-    private String password;
+//    private String username;
+//    private String password;
     private String code;
     private Timestamp createdAt;
     private Timestamp deletedAt;
     private Timestamp updatedAt;
-    private String sessionId;
+    //    private String sessionId;
+    private String profileId;
 
     @OneToMany(mappedBy = "payer")
     private List<Relationship> relationships;
@@ -54,4 +55,5 @@ public class Payer {
 
     @OneToMany(mappedBy = "payer")
     private List<Notification> notifications;
+
 }

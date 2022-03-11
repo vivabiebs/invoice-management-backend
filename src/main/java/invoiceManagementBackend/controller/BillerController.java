@@ -5,6 +5,7 @@ import invoiceManagementBackend.model.inquiry.detailInquiry.request.UserDetailIn
 import invoiceManagementBackend.model.inquiry.detailInquiry.response.BillerDetailInquiryResponse;
 import invoiceManagementBackend.model.inquiry.request.BillerInquiryRequest;
 import invoiceManagementBackend.model.inquiry.response.BillerInquiryResponse;
+import invoiceManagementBackend.model.update.request.UserUpdateRequest;
 import invoiceManagementBackend.service.BillerService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,9 +20,9 @@ public class BillerController {
     @Autowired
     public BillerService billerService;
 
-    @PostMapping("/biller-create")
-    public ResponseEntity<String> billerCreate(@RequestBody UserCreateRequest request) {
-        billerService.createBiller(request);
+    @PostMapping("/biller-update")
+    public ResponseEntity<String> billerUpdate(@RequestBody UserUpdateRequest request) {
+        billerService.updateBiller(request);
         return ResponseEntity.ok("okokok biller");
     }
 
