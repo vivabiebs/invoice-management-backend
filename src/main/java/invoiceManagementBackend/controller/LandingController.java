@@ -16,6 +16,6 @@ public class LandingController {
     @PostMapping("/landing")
     public ResponseEntity<String> landing(@RequestBody LandingRequest request) {
         landingService.landing(request);
-        return ResponseEntity.ok("landing ok");
+        return ResponseEntity.ok("Landing successfully.");
     }
 }

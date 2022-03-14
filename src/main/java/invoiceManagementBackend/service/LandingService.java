@@ -42,14 +42,13 @@ public class LandingService {
 
         List<Invoice> invoices = new ArrayList<>();
 
-
-        if (!(billerService.getBillerByUsername(request.getUsername()) == null)) {
-            Biller biller = billerService.getBillerByUsername(request.getUsername());
+        if (!(billerService.getBiller(request.getBillerId()) == null)) {
+            Biller biller = billerService.getBiller(request.getBillerId());
             invoices = biller.getInvoices();
         }
 
-        if (!(payerService.getPayerByUsername(request.getUsername()) == null)) {
-            Payer payer = payerService.getPayerByUsername(request.getUsername());
+        if (!(payerService.getPayer(request.getPayerId()) == null)) {
+            Payer payer = payerService.getPayer(request.getPayerId());
             invoices = payer.getInvoices();
         }
 

@@ -3,11 +3,11 @@ package invoiceManagementBackend.service;
 import invoiceManagementBackend.entity.Biller;
 import invoiceManagementBackend.entity.Payer;
 import invoiceManagementBackend.entity.Relationship;
-import invoiceManagementBackend.model.authentication.register.request.UserCreateRequest;
 import invoiceManagementBackend.model.inquiry.detailInquiry.request.UserDetailInquiryRequest;
 import invoiceManagementBackend.model.inquiry.detailInquiry.response.PayerDetailInquiryResponse;
 import invoiceManagementBackend.model.inquiry.request.PayerInquiryRequest;
 import invoiceManagementBackend.model.inquiry.response.PayerInquiryResponse;
+import invoiceManagementBackend.model.update.request.UserUpdateRequest;
 import invoiceManagementBackend.repository.PayerRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,34 +30,32 @@ public class PayerService {
     @Autowired
     RelationshipService relationshipService;
 
-    public void createPayer(UserCreateRequest request) {
-        Payer payer = new Payer();
+    public void updatePayer(UserUpdateRequest request) {
+        Timestamp now = Timestamp.valueOf(LocalDateTime.now());
 
-        payer.setName(request.getName());
-        payer.setLastname(request.getLastname());
-        payer.setPhone(request.getPhone());
-        payer.setIsCitizen(request.getIsCitizen());
-        payer.setCitizenId(request.getCitizenId());
-        payer.setTaxId(request.getTaxId());
-        payer.setAddressDetail(request.getAddressDetail());
-        payer.setRoad(request.getRoad());
-        payer.setSubDistrict(request.getSubDistrict());
-        payer.setDistrict(request.getDistrict());
-        payer.setProvince(request.getProvince());
-        payer.setZipCode(request.getZipCode());
-        payer.setUsername(request.getUsername());
-        payer.setPassword(request.getPassword());
-        payer.setCreatedAt(Timestamp.valueOf(LocalDateTime.now()));
-
-        payerRepository.save(payer);
+        //update
+        if (!(payerRepository.findByCitizenId(request.getCitizenId()) == null)) {
+            var payer = payerRepository.findByCitizenId(request.getCitizenId());
+            payer.setName(request.getName());
+            payer.setLastname(request.getLastname());
+            payer.setPhone(request.getPhone());
+            payer.setAddressDetail(request.getAddressDetail());
+            payer.setRoad(request.getRoad());
+            payer.setSubDistrict(request.getSubDistrict());
+            payer.setDistrict(request.getDistrict());
+            payer.setProvince(request.getProvince());
+            payer.setZipCode(request.getZipCode());
+            payer.setUpdatedAt(now);
+            payerRepository.save(payer);
+        }
     }
 
     public Payer getPayer(int id) {
         return payerRepository.findById(id);
     }
 
-    public Payer getPayerByUsername(String username) {
-        return payerRepository.findByUsername(username);
+    public Payer getPayerByProfileId(String profileId) {
+        return payerRepository.findByProfileId(profileId);
     }
 
     public PayerInquiryResponse inquiryPayer(PayerInquiryRequest request) {
@@ -84,7 +82,6 @@ public class PayerService {
             detailResponse.setDistrict(payer.getDistrict());
             detailResponse.setProvince(payer.getProvince());
             detailResponse.setZipCode(payer.getZipCode());
-            detailResponse.setUsername(payer.getUsername());
             detailResponse.setCreatedAt(payer.getCreatedAt());
             detailResponse.setUpdatedAt(payer.getUpdatedAt());
             detailResponse.setDeletedAt(payer.getDeletedAt());
@@ -97,26 +94,24 @@ public class PayerService {
 
     public PayerDetailInquiryResponse inquiryPayerDetail(UserDetailInquiryRequest request) {
         Payer payer = payerRepository.findById(request.getId());
-        PayerDetailInquiryResponse payerDetailInquiryResponse = new PayerDetailInquiryResponse();
 
-        payerDetailInquiryResponse.setId(payer.getId());
-        payerDetailInquiryResponse.setName(payer.getName());
-        payerDetailInquiryResponse.setLastname(payer.getLastname());
-        payerDetailInquiryResponse.setPhone(payer.getPhone());
-        payerDetailInquiryResponse.setCitizenId(payer.getCitizenId());
-        payerDetailInquiryResponse.setTaxId(payer.getTaxId());
-        payerDetailInquiryResponse.setAddressDetail(payer.getAddressDetail());
-        payerDetailInquiryResponse.setRoad(payer.getRoad());
-        payerDetailInquiryResponse.setSubDistrict(payer.getSubDistrict());
-        payerDetailInquiryResponse.setDistrict(payer.getDistrict());
-        payerDetailInquiryResponse.setProvince(payer.getProvince());
-        payerDetailInquiryResponse.setZipCode(payer.getZipCode());
-        payerDetailInquiryResponse.setUsername(payer.getUsername());
-        payerDetailInquiryResponse.setPassword(payer.getPassword());
-        payerDetailInquiryResponse.setCreatedAt(payer.getCreatedAt());
-        payerDetailInquiryResponse.setUpdatedAt(payer.getUpdatedAt());
-        payerDetailInquiryResponse.setDeletedAt(payer.getDeletedAt());
-
-        return payerDetailInquiryResponse;
+        return PayerDetailInquiryResponse.builder()
+                .id(payer.getId())
+                .name(payer.getName())
+                .lastname(payer.getLastname())
+                .phone(payer.getPhone())
+                .isCitizen(payer.getIsCitizen())
+                .citizenId(payer.getCitizenId())
+                .taxId(payer.getTaxId())
+                .addressDetail(payer.getAddressDetail())
+                .road(payer.getRoad())
+                .district(payer.getDistrict())
+                .subDistrict(payer.getSubDistrict())
+                .province(payer.getProvince())
+                .zipCode(payer.getZipCode())
+                .profileId(payer.getProfileId())
+                .createdAt(payer.getCreatedAt())
+                .updatedAt(payer.getUpdatedAt())
+                .deletedAt(payer.getDeletedAt()).build();
     }
 }
