@@ -50,7 +50,6 @@ public class InvoiceService {
         invoice.setTotalAmount(request.getTotalAmount());
         invoice.setTotalAmountAddedTax(request.getTotalAmountAddedTax());
         invoice.setVat(request.getVat());
-        invoice.setThAmount(request.getThAmount());
         invoice.setDueDate(request.getDueDate());
         invoice.setStatus("processing");
 
@@ -116,7 +115,6 @@ public class InvoiceService {
             detailInquiryResponse.setTotalAmount(invoice.getTotalAmount());
             detailInquiryResponse.setTotalAmountAddedTax(invoice.getTotalAmountAddedTax());
             detailInquiryResponse.setVat(invoice.getVat());
-            detailInquiryResponse.setThAmount(invoice.getThAmount());
             detailInquiryResponse.setStatus(invoice.getStatus());
             detailInquiryResponse.setDueDate(invoice.getDueDate());
             detailInquiryResponse.setCorrectionRequest(invoice.getCorrectionRequest());
@@ -142,7 +140,6 @@ public class InvoiceService {
         invoiceListDetailInquiryResponse.setTotalAmount(invoice.getTotalAmount());
         invoiceListDetailInquiryResponse.setTotalAmountAddedTax(invoice.getTotalAmountAddedTax());
         invoiceListDetailInquiryResponse.setVat(invoice.getVat());
-        invoiceListDetailInquiryResponse.setThAmount(invoice.getThAmount());
         invoiceListDetailInquiryResponse.setStatus(invoice.getStatus());
         invoiceListDetailInquiryResponse.setDueDate(invoice.getDueDate());
         invoiceListDetailInquiryResponse.setCorrectionRequest(invoice.getCorrectionRequest());
@@ -244,7 +241,6 @@ public class InvoiceService {
             detailInquiryResponse.setTotalAmount(invoice.getTotalAmount());
             detailInquiryResponse.setTotalAmountAddedTax(invoice.getTotalAmountAddedTax());
             detailInquiryResponse.setVat(invoice.getVat());
-            detailInquiryResponse.setThAmount(invoice.getThAmount());
             detailInquiryResponse.setStatus(invoice.getStatus());
             detailInquiryResponse.setDueDate(invoice.getDueDate());
             detailInquiryResponse.setCorrectionRequest(invoice.getCorrectionRequest());

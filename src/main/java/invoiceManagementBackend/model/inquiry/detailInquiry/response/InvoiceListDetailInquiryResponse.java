@@ -17,7 +17,6 @@ public class InvoiceListDetailInquiryResponse {
     private double totalAmount;
     private double totalAmountAddedTax;
     private double vat;
-    private String thAmount;
     private String status;
     private Date dueDate;
     private Timestamp createdAt;

@@ -7,6 +7,7 @@ import invoiceManagementBackend.entity.Payer;
 import invoiceManagementBackend.model.create.request.NotificationCreateRequest;
 import invoiceManagementBackend.model.inquiry.request.NotificationInquiryRequest;
 import invoiceManagementBackend.model.inquiry.response.NotificationInquiryResponse;
+import invoiceManagementBackend.model.inquiry.response.NotificationUnreadCountResponse;
 import invoiceManagementBackend.repository.NotificationRepository;
 import invoiceManagementBackend.util.CommonConstant;
 import lombok.extern.slf4j.Slf4j;
@@ -79,28 +80,59 @@ public class NotificationService {
             Biller biller = billerService.getBiller(request.getBillerId());
             Payer payer = payerService.getPayer(request.getPayerId());
             notifications = notificationRepository.findAllByBillerAndPayer(biller, payer, sortBy);
-        } else if ((!ObjectUtils.isEmpty(request.getPayerId())) && ObjectUtils.isEmpty(request.getBillerId())) {
+        }
+        if (ObjectUtils.isNotEmpty(request.getPayerId()) && request.getBillerId() == 0) {
+            log.info("in payer");
             Payer payer = payerService.getPayer(request.getPayerId());
             notifications = notificationRepository.findAllByPayer(payer, sortBy);
-        } else if (ObjectUtils.isEmpty(request.getPayerId()) && (!ObjectUtils.isEmpty(request.getBillerId()))) {
+        } else if (ObjectUtils.isNotEmpty(request.getBillerId()) && request.getPayerId() == 0) {
+            log.info("in biller");
             Biller biller = billerService.getBiller(request.getBillerId());
             notifications = notificationRepository.findAllByBiller(biller, sortBy);
         }
+
         notifications.forEach(notification -> {
             notification.setUnread(false);
             notificationRepository.save(notification);
 
-            NotificationInquiryResponse.NotificationDetailInquiryResponse notificationDetailInquiryResponse =
-                    new NotificationInquiryResponse.NotificationDetailInquiryResponse();
-            notificationDetailInquiryResponse.setId(notification.getId());
-            notificationDetailInquiryResponse.setBillerId(notification.getBiller().getId());
-            notificationDetailInquiryResponse.setPayerId(notification.getPayer().getId());
-            notificationDetailInquiryResponse.setInvoiceId(notification.getInvoice().getId());
-            notificationDetailInquiryResponse.setMessage(notification.getMessage());
-            notificationDetailInquiryResponse.setUnread(notification.isUnread());
+            var notificationDetailInquiryResponse =
+                    NotificationInquiryResponse.NotificationDetailInquiryResponse.builder()
+                            .id(notification.getId())
+                            .billerId(notification.getBiller().getId())
+                            .payerId(notification.getPayer().getId())
+                            .invoiceId(notification.getInvoice().getId())
+                            .message(notification.getMessage())
+                            .isUnread(notification.isUnread())
+                            .build();
+
             notificationResponses.add(notificationDetailInquiryResponse);
         });
+
         response.setNotifications(notificationResponses);
         return response;
     }
+
+    public NotificationUnreadCountResponse getUnreadCount(NotificationInquiryRequest request) {
+        var unreadCountResponse = NotificationUnreadCountResponse.builder().build();
+        List<Notification> notifications = new ArrayList<>();
+
+        log.info("request payer id : {}", request.getPayerId());
+        if (ObjectUtils.isNotEmpty(request.getBillerId()) && request.getPayerId() == 0) {
+            Biller biller = billerService.getBiller(request.getBillerId());
+            if (notificationRepository.findAllByBillerAndIsUnreadTrue(biller.getId()).isEmpty()) {
+                unreadCountResponse.setUnreadCount(0);
+            }
+            notifications = notificationRepository.findAllByBillerAndIsUnreadTrue(biller.getId()).get();
+        } else if (ObjectUtils.isNotEmpty(request.getPayerId()) && request.getBillerId() == 0) {
+            Payer payer = payerService.getPayer(request.getPayerId());
+            if (notificationRepository.findAllByPayerAndIsUnreadTrue(payer.getId()).isEmpty()) {
+                unreadCountResponse.setUnreadCount(0);
+            }
+            notifications = notificationRepository.findAllByPayerAndIsUnreadTrue(payer.getId()).get();
+        }
+
+        unreadCountResponse.setUnreadCount(notifications.size());
+        return unreadCountResponse;
+    }
+
 }

@@ -15,7 +15,6 @@ public class InvoiceCreateRequest {
     private double totalAmount;
     private double totalAmountAddedTax;
     private double vat;
-    private String thAmount;
     private Date dueDate;
     private java.util.List<List> lists;
 }

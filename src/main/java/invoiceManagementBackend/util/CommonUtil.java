@@ -16,6 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j
@@ -68,54 +70,23 @@ public class CommonUtil {
         return userService.findByUsername(username);
     }
 
-//    public String numsToThaiWord(double number) {
-//        String numberToString = String.valueOf(number);
-//        String thaiWord = "";
-//        if (numberToString.length() == 1) {
-//            thaiWord = numToWord(numberToString);
-//        } else if (numberToString.length() == 2) {
-//            if (numberToString.charAt(0) == '1') {
-//                thaiWord = "สิบ";
-//            } else if (numberToString.charAt(0) == '2') {
-//                thaiWord = "ยี่สิบ";
-//            } else {
-//                thaiWord = numToWord(numberToString).concat("สิบ");
-//            }
-//        }
-//        return thaiWord.concat("บาทถ้วน");
-//    }
+    public boolean validPassword(String password) {
+        if (password.length() >= 8) {
+            log.info("length >= 8");
+            Pattern upper = Pattern.compile("[A-Z]");
+            Pattern lower = Pattern.compile("[a-z]");
+            Pattern digit = Pattern.compile("[0-9]");
+            Pattern special = Pattern.compile("[!@#$%&*()_+=|<>?{}\\[\\]~-]");
 
-//    public String numToWord(String num) {
-//        String thaiWord = "";
-//        switch (num) {
-//            case "1":
-//                thaiWord = "หนึ่ง";
-//                break;
-//            case "2":
-//                thaiWord = "สอง";
-//                break;
-//            case "3":
-//                thaiWord = "สาม";
-//                break;
-//            case "4":
-//                thaiWord = "สี่";
-//                break;
-//            case "5":
-//                thaiWord = "ห้า";
-//                break;
-//            case "6":
-//                thaiWord = "หก";
-//                break;
-//            case "7":
-//                thaiWord = "เจ็ด";
-//                break;
-//            case "8":
-//                thaiWord = "แปด";
-//                break;
-//            case "9":
-//                thaiWord = "เก้า";
-//                break;
-//        }
-//        return thaiWord;
-//    }
+            //Pattern eight = Pattern.compile (".{8}");
+            Matcher hasUpper = upper.matcher(password);
+            Matcher hasLower = lower.matcher(password);
+            Matcher hasDigit = digit.matcher(password);
+            Matcher hasSpecial = special.matcher(password);
+
+            return hasUpper.find() && hasLower.find() && hasDigit.find() && hasSpecial.find();
+        } else
+            return false;
+
+    }
 }

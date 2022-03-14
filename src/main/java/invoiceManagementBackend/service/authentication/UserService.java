@@ -4,6 +4,7 @@ import invoiceManagementBackend.entity.Biller;
 import invoiceManagementBackend.entity.Payer;
 import invoiceManagementBackend.entity.User;
 import invoiceManagementBackend.model.authentication.register.request.UserCreateRequest;
+import invoiceManagementBackend.model.update.request.ChangePasswordRequest;
 import invoiceManagementBackend.repository.BillerRepository;
 import invoiceManagementBackend.repository.PayerRepository;
 import invoiceManagementBackend.repository.UserRepository;
@@ -22,7 +23,6 @@ import org.springframework.util.ObjectUtils;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Optional;
 
 @Service
 @Slf4j
@@ -60,8 +60,14 @@ public class UserService implements UserDetailsService {
                 new ArrayList<>());
     }
 
-    public void createUser(UserCreateRequest request) {
-        request.setPassword(bcryptEncoder.encode(request.getPassword()));
+    public void createUser(UserCreateRequest request) throws Exception {
+        var password = request.getPassword();
+        var encodedPassword = bcryptEncoder.encode(request.getPassword());
+        if (commonUtil.validPassword(password)) {
+            request.setPassword(bcryptEncoder.encode(encodedPassword));
+        } else {
+            throw new Exception("Invalid password");
+        }
         String profileId = commonUtil.generateCode();
         Timestamp now = Timestamp.valueOf(LocalDateTime.now());
         var user = invoiceManagementBackend.entity.User.builder().build();
@@ -117,9 +123,27 @@ public class UserService implements UserDetailsService {
         userRepository.save(user);
     }
 
-    public User findByUsername(String username){
+    public User findByUsername(String username) {
         return userRepository.findByUsername(username);
     }
 
-    // edit username & password
+    public void updatePassword(ChangePasswordRequest request, User user) throws Exception {
+        var newPassword = request.getNewPassword();
+        var newPasswordEncoded = bcryptEncoder.encode(request.getNewPassword());
+        if (bcryptEncoder.matches(request.getOldPassword(), user.getPassword())) {
+            if (commonUtil.validPassword(newPassword)) {
+                if (request.getNewPassword().equals(request.getConfirmNewPassword())) {
+                    user.setPassword(newPasswordEncoded);
+                    userRepository.save(user);
+                } else {
+                    throw new Exception("Your new password and new password confirm not match.");
+                }
+            } else {
+                throw new Exception("Invalid password");
+            }
+        } else {
+            throw new Exception("Invalid old password.");
+
+        }
+    }
 }

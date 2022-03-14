@@ -1,6 +1,9 @@
 package invoiceManagementBackend.model.inquiry.response;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.sql.Date;
 import java.sql.Timestamp;
@@ -24,7 +27,6 @@ public class InvoiceInquiryResponse {
         private double totalAmount;
         private double totalAmountAddedTax;
         private double vat;
-        private String thAmount;
         private String status;
         private Date dueDate;
         private Timestamp createdAt;

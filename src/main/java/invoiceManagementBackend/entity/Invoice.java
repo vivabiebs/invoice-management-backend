@@ -1,6 +1,9 @@
 package invoiceManagementBackend.entity;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.sql.Date;
@@ -18,12 +21,10 @@ import java.util.Set;
 public class Invoice {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(unique = true)
     private int id;
     private double totalAmount;
     private double totalAmountAddedTax;
     private double vat;
-    private String thAmount;
     private String status;
     private Date dueDate;
     private Timestamp createdAt;
