@@ -11,4 +11,6 @@ public interface BillerRepository extends JpaRepository<Biller, Integer> {
     Biller findByCitizenId(String citizenId);
 
     Biller findByCode(String code);
+
+    Biller findByProfileId(String profileId);
 }

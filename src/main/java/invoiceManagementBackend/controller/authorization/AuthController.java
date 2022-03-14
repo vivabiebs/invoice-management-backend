@@ -4,26 +4,28 @@ import invoiceManagementBackend.controller.BillerController;
 import invoiceManagementBackend.controller.LandingController;
 import invoiceManagementBackend.controller.PayerController;
 import invoiceManagementBackend.model.authentication.login.request.JwtRequest;
-import invoiceManagementBackend.model.authentication.login.request.UserLoginRequest;
 import invoiceManagementBackend.model.authentication.login.response.JwtResponse;
 import invoiceManagementBackend.model.authentication.register.request.UserCreateRequest;
+import invoiceManagementBackend.model.inquiry.detailInquiry.request.UserDetailInquiryRequest;
 import invoiceManagementBackend.service.BillerService;
 import invoiceManagementBackend.service.PayerService;
 import invoiceManagementBackend.service.authentication.UserService;
-import invoiceManagementBackend.util.JwtTokenUtil;
+import invoiceManagementBackend.util.CommonUtil;
+import invoiceManagementBackend.util.JwtProviderUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.validation.Valid;
 
 @RestController
 @Slf4j
@@ -33,7 +35,7 @@ public class AuthController {
     private AuthenticationManager authenticationManager;
 
     @Autowired
-    private JwtTokenUtil jwtTokenUtil;
+    private JwtProviderUtil jwtProviderUtil;
 
     @Autowired
     LandingController landingController;
@@ -56,88 +58,50 @@ public class AuthController {
     @Autowired
     UserController userController;
 
-    BCryptPasswordEncoder bCryptPasswordEncoder;
+    @Autowired
+    CommonUtil commonUtil;
 
-    //    @PreAuthorize(value = "")
     @PostMapping(value = "/register")
     public ResponseEntity<String> register(@RequestBody UserCreateRequest request) throws Exception {
-        log.info("in controllerrrrrrrr");
-        request.setPassword(bCryptPasswordEncoder.encode(request.getPassword()));
-
         return userController.userCreate(request);
     }
 
-    @PostMapping(value = "/authenticate")
-    public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequest authenticationRequest) throws Exception {
+    @PostMapping(value = "/login")
+    public ResponseEntity<?> createAuthenticationToken(@Valid @RequestBody JwtRequest authenticationRequest) throws Exception {
+        if (userService.findByUsername(authenticationRequest.getUsername()) != null) {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            authenticationRequest.getUsername(),
+                            authenticationRequest.getPassword()
+                    )
+            );
 
-        authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            String jwt = jwtProviderUtil.generateJwtToken(authentication);
 
-        final UserDetails userDetails = userService.loadUserByUsername(authenticationRequest.getUsername());
+            var jwtResponse = JwtResponse.builder().jwtToken(jwt).build();
 
-        final String token = jwtTokenUtil.generateToken(userDetails);
+            var user = commonUtil.getUser(jwt);
+            var userDetailInquiryRequest = UserDetailInquiryRequest
+                    .builder().build();
 
-        return ResponseEntity.ok(new JwtResponse(token));
-    }
+            if (user.getRole().equals("biller")) {
+                var biller = billerService.getBillerByProfileId(user.getBillerProfileId());
+                userDetailInquiryRequest.setId((biller.getId()));
+                var billerResponse = billerService.inquiryBillerDetail(userDetailInquiryRequest);
+                jwtResponse.setBiller(billerResponse);
 
-    private void authenticate(String username, String password) throws Exception {
-        try {
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
-        } catch (DisabledException e) {
-            throw new Exception("USER_DISABLED", e);
-        } catch (BadCredentialsException e) {
-            throw new Exception("INVALID_CREDENTIALS", e);
+            } else {
+                var payer = payerService.getPayerByProfileId(user.getPayerProfileId());
+                userDetailInquiryRequest.setId((payer.getId()));
+                var payerResponse = payerService.inquiryPayerDetail(userDetailInquiryRequest);
+                jwtResponse.setPayer(payerResponse);
+            }
+
+            return ResponseEntity.ok(jwtResponse);
+
+        } else {
+            throw new AuthenticationCredentialsNotFoundException("Username not found.");
         }
     }
-
-//    @PostMapping(value = "/login")
-//    public ResponseEntity<String> login(UserLoginRequest request) {
-//        var landingRequest = LandingRequest.builder().build();
-//        String password = request.getPassword();
-//        String encodedPassword = "";
-//
-//        if (billerService.getBillerByUsername(request.getUsername()) != null) {
-//            var biller = billerService.getBillerByUsername(request.getUsername());
-//            encodedPassword = biller.getPassword();
-//            landingRequest.setBillerId(biller.getId());
-//            landingRequest.setUsername(biller.getUsername());
-//
-//        } else if (payerService.getPayerByUsername(request.getUsername()) != null) {
-//            var payer = payerService.getPayerByUsername((request.getUsername()));
-//            encodedPassword = payer.getPassword();
-//            landingRequest.setPayerId(payer.getId());
-//            landingRequest.setUsername(payer.getUsername());
-//
-//        } else {
-//            return ResponseEntity.ok("Username not found.");
-//        }
-
-//        boolean isPasswordMatch = bCryptPasswordEncoder.matches(password, encodedPassword);
-
-//        if (isPasswordMatch) {
-//            landingController.landing(landingRequest);
-//        } else {
-//            return ResponseEntity.ok("Incorrect password.");
-//        }
-
-//        return ResponseEntity.ok("Registered");
-//    }
-
-////    @PostMapping(value = "/register")
-////    public ResponseEntity<String> processRegister(@RequestBody UserCreateRequest request) {
-////        List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
-////        authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
-//
-////        String encodedPassword = bCryptPasswordEncoder.encode(request.getPassword());
-////        String decodedPassword = encodedPassword
-//
-////        User user = new User(request.getUsername(), encodedPassword, authorities);
-////        jdbcUserDetailsManager.createUser(user);
-////                var landingRequest = LandingRequest.builder()
-////                .billerId()
-////                .payerId()
-////                .username()
-////                .build();
-////        return landingController.landing(landingRequest);
-////    }
-
 }

@@ -42,29 +42,28 @@ public class LandingService {
 
         List<Invoice> invoices = new ArrayList<>();
 
+        if (!(billerService.getBiller(request.getBillerId()) == null)) {
+            Biller biller = billerService.getBiller(request.getBillerId());
+            invoices = biller.getInvoices();
+        }
 
-//        if (!(billerService.getBillerByUsername(request.getUsername()) == null)) {
-//            Biller biller = billerService.getBillerByUsername(request.getUsername());
-//            invoices = biller.getInvoices();
-//        }
-//
-//        if (!(payerService.getPayerByUsername(request.getUsername()) == null)) {
-//            Payer payer = payerService.getPayerByUsername(request.getUsername());
-//            invoices = payer.getInvoices();
-//        }
+        if (!(payerService.getPayer(request.getPayerId()) == null)) {
+            Payer payer = payerService.getPayer(request.getPayerId());
+            invoices = payer.getInvoices();
+        }
 
-//        invoices.forEach(invoice -> {
-//            if (invoice.getDueDate().before(Date.valueOf(LocalDate.now()))) {
-//                invoice.setStatus("overdue");
-//                invoiceRepository.save(invoice);
-//
-//                NotificationCreateRequest notificationCreateRequest = new NotificationCreateRequest();
-//                notificationCreateRequest.setInvoiceId(invoice.getId());
-//                notificationCreateRequest.setBillerId(invoice.getBiller().getId());
-//                notificationCreateRequest.setPayerId(invoice.getPayer().getId());
-//
-//                notificationService.createNotification(notificationCreateRequest, CommonConstant.OVERDUE);
-//            }
-//        });
+        invoices.forEach(invoice -> {
+            if (invoice.getDueDate().before(Date.valueOf(LocalDate.now()))) {
+                invoice.setStatus("overdue");
+                invoiceRepository.save(invoice);
+
+                NotificationCreateRequest notificationCreateRequest = new NotificationCreateRequest();
+                notificationCreateRequest.setInvoiceId(invoice.getId());
+                notificationCreateRequest.setBillerId(invoice.getBiller().getId());
+                notificationCreateRequest.setPayerId(invoice.getPayer().getId());
+
+                notificationService.createNotification(notificationCreateRequest, CommonConstant.OVERDUE);
+            }
+        });
     }
 }

@@ -54,9 +54,9 @@ public class PayerService {
         return payerRepository.findById(id);
     }
 
-//    public Payer getPayerByUsername(String username) {
-//        return payerRepository.findByUsername(username);
-//    }
+    public Payer getPayerByProfileId(String profileId) {
+        return payerRepository.findByProfileId(profileId);
+    }
 
     public PayerInquiryResponse inquiryPayer(PayerInquiryRequest request) {
         Biller biller = billerService.getBiller(request.getBillerId());
@@ -82,7 +82,6 @@ public class PayerService {
             detailResponse.setDistrict(payer.getDistrict());
             detailResponse.setProvince(payer.getProvince());
             detailResponse.setZipCode(payer.getZipCode());
-//            detailResponse.setUsername(payer.getUsername());
             detailResponse.setCreatedAt(payer.getCreatedAt());
             detailResponse.setUpdatedAt(payer.getUpdatedAt());
             detailResponse.setDeletedAt(payer.getDeletedAt());
@@ -95,26 +94,24 @@ public class PayerService {
 
     public PayerDetailInquiryResponse inquiryPayerDetail(UserDetailInquiryRequest request) {
         Payer payer = payerRepository.findById(request.getId());
-        PayerDetailInquiryResponse payerDetailInquiryResponse = new PayerDetailInquiryResponse();
 
-        payerDetailInquiryResponse.setId(payer.getId());
-        payerDetailInquiryResponse.setName(payer.getName());
-        payerDetailInquiryResponse.setLastname(payer.getLastname());
-        payerDetailInquiryResponse.setPhone(payer.getPhone());
-        payerDetailInquiryResponse.setCitizenId(payer.getCitizenId());
-        payerDetailInquiryResponse.setTaxId(payer.getTaxId());
-        payerDetailInquiryResponse.setAddressDetail(payer.getAddressDetail());
-        payerDetailInquiryResponse.setRoad(payer.getRoad());
-        payerDetailInquiryResponse.setSubDistrict(payer.getSubDistrict());
-        payerDetailInquiryResponse.setDistrict(payer.getDistrict());
-        payerDetailInquiryResponse.setProvince(payer.getProvince());
-        payerDetailInquiryResponse.setZipCode(payer.getZipCode());
-//        payerDetailInquiryResponse.setUsername(payer.getUsername());
-//        payerDetailInquiryResponse.setPassword(payer.getPassword());
-        payerDetailInquiryResponse.setCreatedAt(payer.getCreatedAt());
-        payerDetailInquiryResponse.setUpdatedAt(payer.getUpdatedAt());
-        payerDetailInquiryResponse.setDeletedAt(payer.getDeletedAt());
-
-        return payerDetailInquiryResponse;
+        return PayerDetailInquiryResponse.builder()
+                .id(payer.getId())
+                .name(payer.getName())
+                .lastname(payer.getLastname())
+                .phone(payer.getPhone())
+                .isCitizen(payer.getIsCitizen())
+                .citizenId(payer.getCitizenId())
+                .taxId(payer.getTaxId())
+                .addressDetail(payer.getAddressDetail())
+                .road(payer.getRoad())
+                .district(payer.getDistrict())
+                .subDistrict(payer.getSubDistrict())
+                .province(payer.getProvince())
+                .zipCode(payer.getZipCode())
+                .profileId(payer.getProfileId())
+                .createdAt(payer.getCreatedAt())
+                .updatedAt(payer.getUpdatedAt())
+                .deletedAt(payer.getDeletedAt()).build();
     }
 }

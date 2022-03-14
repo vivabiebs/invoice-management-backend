@@ -10,4 +10,6 @@ public interface PayerRepository extends JpaRepository<Payer, Integer> {
 
     Payer findByCitizenId(String citizenId);
 
+    Payer findByProfileId(String profileId);
+
 }

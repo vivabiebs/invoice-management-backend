@@ -38,13 +38,10 @@ public class Payer {
     private String district;
     private String province;
     private String zipCode;
-//    private String username;
-//    private String password;
     private String code;
     private Timestamp createdAt;
     private Timestamp deletedAt;
     private Timestamp updatedAt;
-    //    private String sessionId;
     private String profileId;
 
     @OneToMany(mappedBy = "payer")

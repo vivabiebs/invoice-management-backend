@@ -174,16 +174,25 @@ public class InvoiceService {
     public void updateStatus(InvoiceStatusUpdateRequest request) {
         Invoice invoice = invoiceRepository.findById(request.getId());
         Timestamp now = Timestamp.valueOf(LocalDateTime.now());
+        NotificationCreateRequest notificationCreateRequest = NotificationCreateRequest.builder()
+                .billerId(invoice.getBiller().getId())
+                .payerId(invoice.getPayer().getId())
+                .invoiceId(invoice.getId())
+                .build();
+
         switch (request.getStatus()) {
             case CommonConstant.CORRECTION_REQUEST:
                 invoice.setCorrectionRequest(request.getCorrectionRequest());
                 invoice.setCorrectionRequestSentAt(now);
+                notificationService.createNotification(notificationCreateRequest, CommonConstant.CORRECTION_REQUEST);
                 break;
             case CommonConstant.INVOICE_CANCELLED:
                 invoice.setCancelledAt(now);
+                notificationService.createNotification(notificationCreateRequest, CommonConstant.INVOICE_CANCELLED);
                 break;
             case CommonConstant.INVOICE_PAID:
                 invoice.setPaidAt(now);
+                notificationService.createNotification(notificationCreateRequest, CommonConstant.INVOICE_PAID);
                 break;
         }
         invoice.setStatus(request.getStatus());
@@ -221,7 +230,6 @@ public class InvoiceService {
         log.info("date : {}", date);
 
         invoices = invoiceRepository.findAllByPayerAndPaidAtBetween(payer, dateFrom_today, now);
-//        invoices = invoiceRepository.findAllByPayerAndPaidAtBetween(payer, dateFrom_month, now);
 
         InvoiceInquiryResponse invoiceInquiryResponse = new InvoiceInquiryResponse();
         java.util.List<InvoiceInquiryResponse.InvoiceDetailInquiryResponse>

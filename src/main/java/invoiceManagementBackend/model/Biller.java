@@ -22,9 +22,8 @@ public class Biller {
     private String subDistrict;
     private String province;
     private String zipCode;
-    private String username;
-    private String password;
     private String code;
+    private String profileId;
     private Timestamp createdAt;
     private Timestamp deletedAt;
     private Timestamp updatedAt;

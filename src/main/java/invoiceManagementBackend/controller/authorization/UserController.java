@@ -16,6 +16,9 @@ public class UserController {
 
     public ResponseEntity<String> userCreate(@RequestBody UserCreateRequest request) {
         userService.createUser(request);
-        return ResponseEntity.ok("okokok user");
+        if (request.getRole().equals("biller")) {
+            return ResponseEntity.ok("Create biller successfully.");
+        }
+        return ResponseEntity.ok("Create payer successfully.");
     }
 }

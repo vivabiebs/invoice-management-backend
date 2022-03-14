@@ -2,6 +2,8 @@ package invoiceManagementBackend.service;
 
 import invoiceManagementBackend.config.restTemplateErrorHandler.RestTemplateResponseErrorHandler;
 import invoiceManagementBackend.entity.Invoice;
+import invoiceManagementBackend.entity.Notification;
+import invoiceManagementBackend.model.create.request.NotificationCreateRequest;
 import invoiceManagementBackend.model.payment.request.CreateQrCodeRequest;
 import invoiceManagementBackend.model.payment.request.GetTokenRequest;
 import invoiceManagementBackend.model.payment.request.ScbCreateQrCodeRequest;
@@ -34,6 +36,9 @@ public class PaymentService {
 
     @Autowired
     InvoiceService invoiceService;
+
+    @Autowired
+    NotificationService notificationService;
 
     @Autowired
     InvoiceRepository invoiceRepository;
@@ -142,6 +147,15 @@ public class PaymentService {
             invoice.setPaidAt(now);
             invoice.setStatus(CommonConstant.INVOICE_PAID);
             invoiceRepository.save(invoice);
+
+            NotificationCreateRequest notificationCreateRequest = NotificationCreateRequest.builder()
+                    .billerId(invoice.getBiller().getId())
+                    .payerId(invoice.getPayer().getId())
+                    .invoiceId(invoice.getId())
+                    .build();
+
+            notificationService.createNotification(notificationCreateRequest,CommonConstant.INVOICE_PAID);
+
         }
 
         return response.getBody();

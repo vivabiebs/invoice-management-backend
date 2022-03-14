@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
@@ -41,6 +42,12 @@ public class UserService implements UserDetailsService {
     @Autowired
     PayerRepository payerRepository;
 
+    @Autowired
+    PasswordEncoder bcryptEncoder;
+
+    @Autowired
+    CommonUtil commonUtil;
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByUsername(username);
@@ -53,21 +60,15 @@ public class UserService implements UserDetailsService {
                 new ArrayList<>());
     }
 
-//    public UserDao save(UserDTO user) {
-//        DAOUser newUser = new DAOUser();
-//        newUser.setUsername(user.getUsername());
-//        newUser.setPassword(bcryptEncoder.encode(user.getPassword()));
-//        return userDao.save(newUser);
-//    }
-
     public void createUser(UserCreateRequest request) {
-        String profileId = CommonUtil.generateCode();
+        request.setPassword(bcryptEncoder.encode(request.getPassword()));
+        String profileId = commonUtil.generateCode();
         Timestamp now = Timestamp.valueOf(LocalDateTime.now());
         var user = invoiceManagementBackend.entity.User.builder().build();
 
         if (request.getRole().equals("biller")) {
             var biller = Biller.builder().build();
-            String code = CommonUtil.generateCode();
+            String code = commonUtil.generateCode();
 
             biller.setName(request.getName());
             biller.setLastname(request.getLastname());
@@ -114,6 +115,10 @@ public class UserService implements UserDetailsService {
         user.setPassword(request.getPassword());
 
         userRepository.save(user);
+    }
+
+    public User findByUsername(String username){
+        return userRepository.findByUsername(username);
     }
 
     // edit username & password
