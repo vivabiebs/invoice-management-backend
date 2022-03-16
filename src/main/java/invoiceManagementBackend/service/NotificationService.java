@@ -48,7 +48,7 @@ public class NotificationService {
         notification.setUnread(true);
         notification.setCreatedAt(Timestamp.valueOf(LocalDateTime.now()));
 
-        String invoiceId = String.valueOf(notification.getInvoice().getId());
+        String invoiceId = " "+notification.getInvoice().getId()+" ";
 
         switch (notificationCase) {
             case CommonConstant.INVOICE_CREATED:
