@@ -10,7 +10,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CreateQrCodeRequest {
-    private String ppId;
-    private double amount;
     private int invoiceId;
 }

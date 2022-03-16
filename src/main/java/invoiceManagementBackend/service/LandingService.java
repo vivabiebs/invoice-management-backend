@@ -42,28 +42,30 @@ public class LandingService {
 
         List<Invoice> invoices = new ArrayList<>();
 
-        if (!(billerService.getBiller(request.getBillerId()) == null)) {
+        if (request.getBillerId() != 0) {
             Biller biller = billerService.getBiller(request.getBillerId());
             invoices = biller.getInvoices();
         }
 
-        if (!(payerService.getPayer(request.getPayerId()) == null)) {
+        if (request.getPayerId() != 0) {
             Payer payer = payerService.getPayer(request.getPayerId());
             invoices = payer.getInvoices();
         }
 
         invoices.forEach(invoice -> {
-            if (invoice.getDueDate().before(Date.valueOf(LocalDate.now()))) {
-                invoice.setStatus("overdue");
-                invoiceRepository.save(invoice);
+            log.info("invoice: {}", invoice.getId());
 
-                NotificationCreateRequest notificationCreateRequest = new NotificationCreateRequest();
-                notificationCreateRequest.setInvoiceId(invoice.getId());
-                notificationCreateRequest.setBillerId(invoice.getBiller().getId());
-                notificationCreateRequest.setPayerId(invoice.getPayer().getId());
-
-                notificationService.createNotification(notificationCreateRequest, CommonConstant.OVERDUE);
-            }
+//            if (invoice.getDueDate().toInstant().isBefore(Date.valueOf(LocalDate.now()).toInstant())) {
+//                invoice.setStatus("overdue");
+//                invoiceRepository.save(invoice);
+//
+//                NotificationCreateRequest notificationCreateRequest = new NotificationCreateRequest();
+//                notificationCreateRequest.setInvoiceId(invoice.getId());
+//                notificationCreateRequest.setBillerId(invoice.getBiller().getId());
+//                notificationCreateRequest.setPayerId(invoice.getPayer().getId());
+//
+//                notificationService.createNotification(notificationCreateRequest, CommonConstant.OVERDUE);
+//            }
         });
     }
 }

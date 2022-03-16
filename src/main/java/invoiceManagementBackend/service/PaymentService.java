@@ -1,8 +1,9 @@
 package invoiceManagementBackend.service;
 
 import invoiceManagementBackend.config.restTemplateErrorHandler.RestTemplateResponseErrorHandler;
+import invoiceManagementBackend.entity.Biller;
 import invoiceManagementBackend.entity.Invoice;
-import invoiceManagementBackend.entity.Notification;
+import invoiceManagementBackend.entity.Payer;
 import invoiceManagementBackend.model.create.request.NotificationCreateRequest;
 import invoiceManagementBackend.model.payment.request.CreateQrCodeRequest;
 import invoiceManagementBackend.model.payment.request.GetTokenRequest;
@@ -41,6 +42,12 @@ public class PaymentService {
     NotificationService notificationService;
 
     @Autowired
+    BillerService billerService;
+
+    @Autowired
+    PayerService payerService;
+
+    @Autowired
     InvoiceRepository invoiceRepository;
 
     @Value("${user-defined.external.scb.url}")
@@ -66,6 +73,8 @@ public class PaymentService {
     }
 
     public CreateQrCodeResponse createQrCode(CreateQrCodeRequest request) {
+        Invoice invoice = invoiceService.getInvoice(request.getInvoiceId());
+
         var uuid = UUID.randomUUID().toString();
         var headers = new HttpHeaders();
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
@@ -92,7 +101,7 @@ public class PaymentService {
                 .qrType("PP")
                 .ppType("BILLERID")
                 .ppId("854459245937662")
-                .amount(request.getAmount())
+                .amount(invoice.getTotalAmountAddedTax())
                 .ref1(generateRefNumber())
                 .ref2(generateRefNumber())
                 .ref3("EKG")
@@ -118,6 +127,10 @@ public class PaymentService {
     }
 
     public SlipVerificationResponse verifySlip(SlipVerificationRequest request) {
+        Invoice invoice = invoiceService.getInvoice(request.getInvoiceId());
+        Biller biller = billerService.getBiller(invoice.getBiller().getId());
+        Payer payer = payerService.getPayer(invoice.getPayer().getId());
+
         var transRef = request.getTransRef();
         var uuid = request.getUuid();
         var token = request.getToken();
@@ -142,8 +155,26 @@ public class PaymentService {
 
         Timestamp now = Timestamp.valueOf(LocalDateTime.now());
 
+        var billerName = "";
+        var payerName = "";
+        if (!biller.getLastname().isEmpty()) {
+            billerName = biller.getName() + " " + biller.getLastname();
+        } else {
+            billerName = biller.getName();
+        }
+
+        if (!payer.getLastname().isEmpty()) {
+            payerName = payer.getName() + " " + payer.getLastname();
+        } else {
+            payerName = payer.getName();
+        }
+
+        Objects.requireNonNull(response.getBody()).getData().getReceiver().setName(billerName);
+        Objects.requireNonNull(response.getBody()).getData().getReceiver().setDisplayName(billerName);
+        Objects.requireNonNull(response.getBody()).getData().getSender().setName(payerName);
+        Objects.requireNonNull(response.getBody()).getData().getSender().setDisplayName(payerName);
+
         if (Objects.requireNonNull(response.getBody()).getStatus().getCode().equals("1000")) {
-            Invoice invoice = invoiceService.getInvoice(request.getInvoiceId());
             invoice.setPaidAt(now);
             invoice.setStatus(CommonConstant.INVOICE_PAID);
             invoiceRepository.save(invoice);
@@ -154,7 +185,7 @@ public class PaymentService {
                     .invoiceId(invoice.getId())
                     .build();
 
-            notificationService.createNotification(notificationCreateRequest,CommonConstant.INVOICE_PAID);
+            notificationService.createNotification(notificationCreateRequest, CommonConstant.INVOICE_PAID);
 
         }
 
