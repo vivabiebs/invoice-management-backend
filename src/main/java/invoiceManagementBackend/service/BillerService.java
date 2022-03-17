@@ -85,7 +85,6 @@ public class BillerService {
                     .district(biller.getDistrict())
                     .province(biller.getProvince())
                     .zipCode(biller.getZipCode())
-//                    .username(biller.getUsername())
                     .createdAt(biller.getCreatedAt())
                     .updatedAt(biller.getUpdatedAt())
                     .deletedAt(biller.getDeletedAt()).build();
