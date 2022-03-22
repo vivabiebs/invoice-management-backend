@@ -63,11 +63,11 @@ public class UserService implements UserDetailsService {
     public void createUser(UserCreateRequest request) throws Exception {
         var password = request.getPassword();
         var encodedPassword = bcryptEncoder.encode(request.getPassword());
-//        if (commonUtil.validPassword(password)) {
-        request.setPassword(bcryptEncoder.encode(encodedPassword));
-//        } else {
-//            throw new Exception("Invalid password");
-//        }
+        if (commonUtil.validPassword(password)) {
+        request.setPassword(encodedPassword);
+        } else {
+            throw new Exception("Invalid password");
+        }
         String profileId = commonUtil.generateCode();
         Timestamp now = Timestamp.valueOf(LocalDateTime.now());
         var user = invoiceManagementBackend.entity.User.builder().build();
