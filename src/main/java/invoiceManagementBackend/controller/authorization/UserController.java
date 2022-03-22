@@ -1,8 +1,8 @@
 package invoiceManagementBackend.controller.authorization;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import invoiceManagementBackend.model.authentication.register.request.UserCreateRequest;
 import invoiceManagementBackend.model.update.request.ChangePasswordRequest;
+import invoiceManagementBackend.service.authentication.UserDetailsServiceImpl;
 import invoiceManagementBackend.service.authentication.UserService;
 import invoiceManagementBackend.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -20,8 +20,11 @@ public class UserController {
     @Autowired
     CommonUtil commonUtil;
 
+    @Autowired
+    UserDetailsServiceImpl userDetailsService;
+
     public ResponseEntity<String> userCreate(@RequestBody UserCreateRequest request) throws Exception {
-        userService.createUser(request);
+        userDetailsService.createUser(request);
         if (request.getRole().equals("biller")) {
             return ResponseEntity.ok("Create biller successfully.");
         }

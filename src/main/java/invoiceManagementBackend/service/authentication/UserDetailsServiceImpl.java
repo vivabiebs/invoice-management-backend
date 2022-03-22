@@ -4,29 +4,25 @@ import invoiceManagementBackend.entity.Biller;
 import invoiceManagementBackend.entity.Payer;
 import invoiceManagementBackend.entity.User;
 import invoiceManagementBackend.model.authentication.register.request.UserCreateRequest;
-import invoiceManagementBackend.model.update.request.ChangePasswordRequest;
 import invoiceManagementBackend.repository.BillerRepository;
 import invoiceManagementBackend.repository.PayerRepository;
 import invoiceManagementBackend.repository.UserRepository;
 import invoiceManagementBackend.service.BillerService;
 import invoiceManagementBackend.service.PayerService;
 import invoiceManagementBackend.util.CommonUtil;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.util.ObjectUtils;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 
 @Service
-@Slf4j
-public class UserService {
+public class UserDetailsServiceImpl implements UserDetailsService {
     @Autowired
     UserRepository userRepository;
 
@@ -48,17 +44,16 @@ public class UserService {
     @Autowired
     CommonUtil commonUtil;
 
-//    @Override
-//    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-//        User user = userRepository.findByUsername(username);
-//
-//        if (ObjectUtils.isEmpty(user)) {
-//            throw new UsernameNotFoundException("User not found with username: " + username);
-//        }
-//        return new org.springframework.security.core.userdetails.User(
-//                user.getUsername(), user.getPassword(),
-//                new ArrayList<>());
-//    }
+    @Override
+    @Transactional
+    public UserDetails loadUserByUsername(String username)
+            throws UsernameNotFoundException {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() ->
+                        new UsernameNotFoundException("User Not Found with -> username or email : " + username)
+                );
+        return UserPrinciple.build(user);
+    }
 
     public void createUser(UserCreateRequest request) throws Exception {
         var password = request.getPassword();
@@ -121,29 +116,5 @@ public class UserService {
         user.setPassword(request.getPassword());
 
         userRepository.save(user);
-    }
-
-//    public User findByUsername(String username) {
-//        return userRepository.findByUsername(username);
-//    }
-
-    public void updatePassword(ChangePasswordRequest request, User user) throws Exception {
-        var newPassword = request.getNewPassword();
-        var newPasswordEncoded = bcryptEncoder.encode(request.getNewPassword());
-        if (bcryptEncoder.matches(request.getOldPassword(), user.getPassword())) {
-            if (commonUtil.validPassword(newPassword)) {
-                if (request.getNewPassword().equals(request.getConfirmNewPassword())) {
-                    user.setPassword(newPasswordEncoded);
-                    userRepository.save(user);
-                } else {
-                    throw new Exception("Your new password and new password confirm not match.");
-                }
-            } else {
-                throw new Exception("Invalid password");
-            }
-        } else {
-            throw new Exception("Invalid old password.");
-
-        }
     }
 }

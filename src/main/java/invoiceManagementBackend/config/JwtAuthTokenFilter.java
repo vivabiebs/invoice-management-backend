@@ -1,6 +1,6 @@
-package invoiceManagementBackend.service.authentication;
+package invoiceManagementBackend.config;
 
-import invoiceManagementBackend.util.JwtProviderUtil;
+import invoiceManagementBackend.service.authentication.UserDetailsServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,18 +18,22 @@ import java.io.IOException;
 
 
 public class JwtAuthTokenFilter extends OncePerRequestFilter {
+
     @Autowired
     private JwtProviderUtil tokenProvider;
 
     @Autowired
-    private UserService userDetailsService;
+    private UserDetailsServiceImpl userDetailsService;
 
     private static final Logger logger = LoggerFactory.getLogger(JwtAuthTokenFilter.class);
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
-                                    FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    FilterChain filterChain)
+            throws ServletException, IOException {
         try {
+
             String jwt = getJwt(request);
             if (jwt != null && tokenProvider.validateJwtToken(jwt)) {
                 String username = tokenProvider.getUserNameFromJwtToken(jwt);
@@ -50,9 +54,11 @@ public class JwtAuthTokenFilter extends OncePerRequestFilter {
 
     private String getJwt(HttpServletRequest request) {
         String authHeader = request.getHeader("Authorization");
+
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             return authHeader.replace("Bearer ", "");
         }
+
         return null;
     }
 }

@@ -1,16 +1,17 @@
 package invoiceManagementBackend.controller.authorization;
 
+import invoiceManagementBackend.config.JwtProviderUtil;
+import invoiceManagementBackend.config.JwtResponse;
+import invoiceManagementBackend.config.LoginForm;
 import invoiceManagementBackend.controller.BillerController;
 import invoiceManagementBackend.controller.LandingController;
 import invoiceManagementBackend.controller.PayerController;
-import invoiceManagementBackend.model.authentication.login.request.JwtRequest;
-import invoiceManagementBackend.model.authentication.login.response.JwtResponse;
 import invoiceManagementBackend.model.authentication.register.request.UserCreateRequest;
 import invoiceManagementBackend.service.BillerService;
 import invoiceManagementBackend.service.PayerService;
+import invoiceManagementBackend.service.authentication.UserDetailsServiceImpl;
 import invoiceManagementBackend.service.authentication.UserService;
 import invoiceManagementBackend.util.CommonUtil;
-import invoiceManagementBackend.util.JwtProviderUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -55,6 +56,9 @@ public class AuthController {
     UserService userService;
 
     @Autowired
+    UserDetailsServiceImpl userDetailsService;
+
+    @Autowired
     UserController userController;
 
     @Autowired
@@ -66,20 +70,22 @@ public class AuthController {
     }
 
     @PostMapping(value = "/login")
-    public ResponseEntity<?> createAuthenticationToken(@Valid @RequestBody JwtRequest authenticationRequest) throws Exception {
-        if (userService.findByUsername(authenticationRequest.getUsername()) != null) {
+    public ResponseEntity<?> createAuthenticationToken(@Valid @RequestBody LoginForm loginRequest) throws Exception {
+        if (userDetailsService.loadUserByUsername(loginRequest.getUsername()) != null) {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
-                            authenticationRequest.getUsername(),
-                            authenticationRequest.getPassword()
+                            loginRequest.getUsername(),
+                            loginRequest.getPassword()
                     )
             );
+
+            log.info("hi");
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
             String jwt = jwtProviderUtil.generateJwtToken(authentication);
 
-            var jwtResponse = JwtResponse.builder().jwtToken(jwt).build();
-            return ResponseEntity.ok(jwtResponse);
+//            var jwtResponse = JwtResponse.builder().jwtToken(jwt).build();
+            return ResponseEntity.ok(new JwtResponse(jwt));
 
         } else {
             throw new AuthenticationCredentialsNotFoundException("Username not found.");

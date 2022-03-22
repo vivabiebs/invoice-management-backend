@@ -50,7 +50,8 @@ public class CommonUtil {
         JwtPayload jwtPayload = objectMapper.readValue(jsonString, JwtPayload.class);
 
         String username = jwtPayload.getSub();
-        User user = userService.findByUsername(username);
+//        User user = userService.findByUsername(username);
+        User user = new User();
 
         return checkRole(user);
     }
@@ -67,7 +68,8 @@ public class CommonUtil {
         JwtPayload jwtPayload = objectMapper.readValue(jsonString, JwtPayload.class);
 
         String username = jwtPayload.getSub();
-        return userService.findByUsername(username);
+//        return userService.findByUsername(username);
+        return new User();
     }
 
     public boolean validPassword(String password) {
