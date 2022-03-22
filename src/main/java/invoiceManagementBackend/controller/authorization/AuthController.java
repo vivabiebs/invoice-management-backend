@@ -4,6 +4,7 @@ import invoiceManagementBackend.controller.BillerController;
 import invoiceManagementBackend.controller.LandingController;
 import invoiceManagementBackend.controller.PayerController;
 import invoiceManagementBackend.model.authentication.login.request.JwtRequest;
+import invoiceManagementBackend.model.authentication.login.response.GetUserTypeInfoResponse;
 import invoiceManagementBackend.model.authentication.login.response.JwtResponse;
 import invoiceManagementBackend.model.authentication.register.request.UserCreateRequest;
 import invoiceManagementBackend.service.BillerService;
@@ -19,10 +20,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
@@ -86,5 +84,17 @@ public class AuthController {
         }
     }
 
+    @PostMapping(value = "/get-role")
+    public ResponseEntity<String> getRoleByJwt(@Valid @RequestHeader("Authorization") String token) throws Exception {
+        var role = commonUtil.getUserRole(token);
+        return ResponseEntity.ok(role);
+    }
+
+    @PostMapping(value = "/user-info")
+    public ResponseEntity<GetUserTypeInfoResponse> getUserTypeInfo
+            (@Valid @RequestHeader("Authorization") String token) throws Exception {
+        var response = userService.getUserTypeInfo(token);
+        return ResponseEntity.ok(response);
+    }
 
 }

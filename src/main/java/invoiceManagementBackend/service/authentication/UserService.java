@@ -1,9 +1,12 @@
 package invoiceManagementBackend.service.authentication;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import invoiceManagementBackend.entity.Biller;
 import invoiceManagementBackend.entity.Payer;
 import invoiceManagementBackend.entity.User;
+import invoiceManagementBackend.model.authentication.login.response.GetUserTypeInfoResponse;
 import invoiceManagementBackend.model.authentication.register.request.UserCreateRequest;
+import invoiceManagementBackend.model.inquiry.detailInquiry.request.UserDetailInquiryRequest;
 import invoiceManagementBackend.model.update.request.ChangePasswordRequest;
 import invoiceManagementBackend.repository.BillerRepository;
 import invoiceManagementBackend.repository.PayerRepository;
@@ -145,5 +148,27 @@ public class UserService implements UserDetailsService {
             throw new Exception("Invalid old password.");
 
         }
+    }
+
+    public GetUserTypeInfoResponse getUserTypeInfo(String token) throws JsonProcessingException {
+        var response = GetUserTypeInfoResponse.builder().build();
+        var user = commonUtil.getUser(token);
+        var userDetailInquiryRequest = UserDetailInquiryRequest
+                .builder().build();
+
+        if (user.getRole().equals("biller")) {
+            var biller = billerService.getBillerByProfileId(user.getBillerProfileId());
+            userDetailInquiryRequest.setId((biller.getId()));
+            var billerResponse = billerService.inquiryBillerDetail(userDetailInquiryRequest);
+            response.setBiller(billerResponse);
+
+        } else {
+            var payer = payerService.getPayerByProfileId(user.getPayerProfileId());
+            userDetailInquiryRequest.setId((payer.getId()));
+            var payerResponse = payerService.inquiryPayerDetail(userDetailInquiryRequest);
+            response.setPayer(payerResponse);
+        }
+
+        return response;
     }
 }
