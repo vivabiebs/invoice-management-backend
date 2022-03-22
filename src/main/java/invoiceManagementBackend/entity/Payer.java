@@ -53,4 +53,7 @@ public class Payer {
     @OneToMany(mappedBy = "payer")
     private List<Notification> notifications;
 
+    @OneToMany(mappedBy = "payer")
+    private List<Payment> payments;
+
 }

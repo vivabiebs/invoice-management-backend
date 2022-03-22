@@ -18,10 +18,10 @@ public class JwtResponse implements Serializable {
     @NotEmpty
     private final String jwtToken;
 
-    @Nullable
-    private BillerDetailInquiryResponse biller;
-
-    @Nullable
-    private PayerDetailInquiryResponse payer;
+//    @Nullable
+//    private BillerDetailInquiryResponse biller;
+//
+//    @Nullable
+//    private PayerDetailInquiryResponse payer;
 
 }

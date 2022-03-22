@@ -33,6 +33,7 @@ public class Invoice {
     private Timestamp correctionRequestSentAt;
     private Timestamp updatedAt;
     private String correctionRequest;
+    private String ref1;
 
     @OneToMany(mappedBy = "invoice")
     private java.util.List<List> lists;
@@ -47,4 +48,7 @@ public class Invoice {
 
     @OneToMany(mappedBy = "invoice")
     private Set<Notification> notifications;
+
+    @OneToMany(mappedBy = "invoice")
+    private java.util.List<Payment> payments;
 }

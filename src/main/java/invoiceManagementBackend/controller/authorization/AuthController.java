@@ -6,7 +6,6 @@ import invoiceManagementBackend.controller.PayerController;
 import invoiceManagementBackend.model.authentication.login.request.JwtRequest;
 import invoiceManagementBackend.model.authentication.login.response.JwtResponse;
 import invoiceManagementBackend.model.authentication.register.request.UserCreateRequest;
-import invoiceManagementBackend.model.inquiry.detailInquiry.request.UserDetailInquiryRequest;
 import invoiceManagementBackend.service.BillerService;
 import invoiceManagementBackend.service.PayerService;
 import invoiceManagementBackend.service.authentication.UserService;
@@ -27,9 +26,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 @RestController
 @Slf4j
-@CrossOrigin
 public class AuthController {
     @Autowired
     private AuthenticationManager authenticationManager;
@@ -80,28 +79,12 @@ public class AuthController {
             String jwt = jwtProviderUtil.generateJwtToken(authentication);
 
             var jwtResponse = JwtResponse.builder().jwtToken(jwt).build();
-
-            var user = commonUtil.getUser(jwt);
-            var userDetailInquiryRequest = UserDetailInquiryRequest
-                    .builder().build();
-
-            if (user.getRole().equals("biller")) {
-                var biller = billerService.getBillerByProfileId(user.getBillerProfileId());
-                userDetailInquiryRequest.setId((biller.getId()));
-                var billerResponse = billerService.inquiryBillerDetail(userDetailInquiryRequest);
-                jwtResponse.setBiller(billerResponse);
-
-            } else {
-                var payer = payerService.getPayerByProfileId(user.getPayerProfileId());
-                userDetailInquiryRequest.setId((payer.getId()));
-                var payerResponse = payerService.inquiryPayerDetail(userDetailInquiryRequest);
-                jwtResponse.setPayer(payerResponse);
-            }
-
             return ResponseEntity.ok(jwtResponse);
 
         } else {
             throw new AuthenticationCredentialsNotFoundException("Username not found.");
         }
     }
+
+
 }

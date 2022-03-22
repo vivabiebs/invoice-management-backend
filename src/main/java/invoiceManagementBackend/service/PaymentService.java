@@ -4,15 +4,18 @@ import invoiceManagementBackend.config.restTemplateErrorHandler.RestTemplateResp
 import invoiceManagementBackend.entity.Biller;
 import invoiceManagementBackend.entity.Invoice;
 import invoiceManagementBackend.entity.Payer;
+import invoiceManagementBackend.entity.Payment;
 import invoiceManagementBackend.model.create.request.NotificationCreateRequest;
 import invoiceManagementBackend.model.payment.request.CreateQrCodeRequest;
 import invoiceManagementBackend.model.payment.request.GetTokenRequest;
 import invoiceManagementBackend.model.payment.request.ScbCreateQrCodeRequest;
 import invoiceManagementBackend.model.payment.response.CreateQrCodeResponse;
 import invoiceManagementBackend.model.payment.response.GetTokenResponse;
+import invoiceManagementBackend.model.payment.response.Status;
 import invoiceManagementBackend.model.payment.slipVerify.request.SlipVerificationRequest;
 import invoiceManagementBackend.model.payment.slipVerify.response.SlipVerificationResponse;
 import invoiceManagementBackend.repository.InvoiceRepository;
+import invoiceManagementBackend.repository.PaymentRepository;
 import invoiceManagementBackend.util.CommonConstant;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -49,6 +52,9 @@ public class PaymentService {
 
     @Autowired
     InvoiceRepository invoiceRepository;
+
+    @Autowired
+    PaymentRepository paymentRepository;
 
     @Value("${user-defined.external.scb.url}")
     private String scbSandboxRequestUrl;
@@ -97,14 +103,17 @@ public class PaymentService {
                 .concat(" ").concat(tokenResponse.getBody().getData().getAccessToken());
         headers.add("authorization", token);
 
+        var ref1 = generateRefNumber();
+        var ref2 = generateRefNumber();
+        var ref3 = generateRefNumber().concat("EKG");
         var scbRequest = ScbCreateQrCodeRequest.builder()
                 .qrType("PP")
                 .ppType("BILLERID")
                 .ppId("854459245937662")
                 .amount(invoice.getTotalAmountAddedTax())
-                .ref1(generateRefNumber())
-                .ref2(generateRefNumber())
-                .ref3("EKG")
+                .ref1(ref1)
+                .ref2(ref2)
+                .ref3(ref3)
                 .build();
 
         var qrRequestHttpEntity = new HttpEntity<>(scbRequest, headers);
@@ -116,6 +125,24 @@ public class PaymentService {
         Objects.requireNonNull(qrResponse.getBody()).setToken(token);
         Objects.requireNonNull(qrResponse.getBody()).setInvoiceId(request.getInvoiceId());
 
+        if (qrResponse.getStatusCodeValue() == 200) {
+            invoice.setRef1(ref1);
+            invoiceRepository.save(invoice);
+        }
+
+//        var payment = Payment.builder()
+//                .invoice(invoice)
+//                .biller(invoice.getBiller())
+//                .payer(invoice.getPayer())
+//                .ref1(ref1)
+//                .ref2(ref2)
+//                .ref3(ref3)
+//                .build();
+//
+//        if (qrResponse.getStatusCodeValue() == 200) {
+//            paymentRepository.save(payment);
+//        }
+
         return qrResponse.getBody();
     }
 
@@ -124,6 +151,11 @@ public class PaymentService {
         boolean useLetters = true;
         boolean useNumbers = true;
         return RandomStringUtils.random(length, useLetters, useNumbers).toUpperCase();
+    }
+
+    public Payment getPaymentByInvoiceId(int invoiceId) {
+        var invoice = invoiceRepository.findById(invoiceId);
+        return paymentRepository.findByInvoice(invoice);
     }
 
     public SlipVerificationResponse verifySlip(SlipVerificationRequest request) {
@@ -169,23 +201,39 @@ public class PaymentService {
             payerName = payer.getName();
         }
 
-        Objects.requireNonNull(response.getBody()).getData().getReceiver().setName(billerName);
-        Objects.requireNonNull(response.getBody()).getData().getReceiver().setDisplayName(billerName);
-        Objects.requireNonNull(response.getBody()).getData().getSender().setName(payerName);
-        Objects.requireNonNull(response.getBody()).getData().getSender().setDisplayName(payerName);
+        if (response.getStatusCodeValue() == 200) {
+            Objects.requireNonNull(response.getBody()).getData().getReceiver().setName(billerName);
+            Objects.requireNonNull(response.getBody()).getData().getReceiver().setDisplayName(billerName);
+            Objects.requireNonNull(response.getBody()).getData().getSender().setName(payerName);
+            Objects.requireNonNull(response.getBody()).getData().getSender().setDisplayName(payerName);
 
-        if (Objects.requireNonNull(response.getBody()).getStatus().getCode().equals("1000")) {
-            invoice.setPaidAt(now);
-            invoice.setStatus(CommonConstant.INVOICE_PAID);
-            invoiceRepository.save(invoice);
+            var ref1 = response.getBody().getData().getRef1();
 
-            NotificationCreateRequest notificationCreateRequest = NotificationCreateRequest.builder()
-                    .billerId(invoice.getBiller().getId())
-                    .payerId(invoice.getPayer().getId())
-                    .invoiceId(invoice.getId())
-                    .build();
+            if (invoice.getRef1().equals(ref1)) {
+                // correct
+                if (Objects.requireNonNull(response.getBody()).getStatus().getCode().equals("1000")) {
+                    invoice.setPaidAt(now);
+                    invoice.setStatus(CommonConstant.INVOICE_PAID);
+                    invoiceRepository.save(invoice);
 
-            notificationService.createNotification(notificationCreateRequest, CommonConstant.INVOICE_PAID);
+                    NotificationCreateRequest notificationCreateRequest = NotificationCreateRequest.builder()
+                            .billerId(invoice.getBiller().getId())
+                            .payerId(invoice.getPayer().getId())
+                            .invoiceId(invoice.getId())
+                            .build();
+
+                    notificationService.createNotification(notificationCreateRequest, CommonConstant.INVOICE_PAID);
+                }
+            } else {
+                //already exists
+                response.getBody()
+                        .setStatus(Status.builder()
+                                .code("2000")
+                                .description("TransRef doesn't match by invoice id")
+                                .build());
+
+                response.getBody().setData(null);
+            }
 
         }
 

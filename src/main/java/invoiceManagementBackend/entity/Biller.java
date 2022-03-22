@@ -52,4 +52,7 @@ public class Biller {
     @OneToMany(mappedBy = "biller")
     private List<Notification> notifications;
 
+    @OneToMany(mappedBy = "biller")
+    private List<Payment> payments;
+
 }
