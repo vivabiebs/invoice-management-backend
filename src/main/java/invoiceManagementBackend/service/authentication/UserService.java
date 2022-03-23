@@ -6,7 +6,11 @@ import invoiceManagementBackend.entity.Payer;
 import invoiceManagementBackend.entity.User;
 import invoiceManagementBackend.model.authentication.login.response.GetUserTypeInfoResponse;
 import invoiceManagementBackend.model.authentication.register.request.UserCreateRequest;
+import invoiceManagementBackend.model.create.response.BillerCreateResponse;
+import invoiceManagementBackend.model.create.response.PayerCreateResponse;
+import invoiceManagementBackend.model.create.response.UserCreateResponse;
 import invoiceManagementBackend.model.inquiry.detailInquiry.request.UserDetailInquiryRequest;
+import invoiceManagementBackend.model.payment.response.Status;
 import invoiceManagementBackend.model.update.request.ChangePasswordRequest;
 import invoiceManagementBackend.repository.BillerRepository;
 import invoiceManagementBackend.repository.PayerRepository;
@@ -63,67 +67,85 @@ public class UserService implements UserDetailsService {
                 new ArrayList<>());
     }
 
-    public void createUser(UserCreateRequest request) throws Exception {
+    public UserCreateResponse createUser(UserCreateRequest request) throws Exception {
         var password = request.getPassword();
         var encodedPassword = bcryptEncoder.encode(request.getPassword());
+        var userCreateResponse = UserCreateResponse.builder().build();
+        var billerCreateResponse = BillerCreateResponse.builder().build();
+        var payerCreateResponse = PayerCreateResponse.builder().build();
+        var status = Status.builder().build();
+
         if (commonUtil.validPassword(password)) {
-        request.setPassword(encodedPassword);
+            status.setCode("1000");
+            status.setDescription("Success");
+
+            request.setPassword(encodedPassword);
+
+            String profileId = commonUtil.generateCode();
+            Timestamp now = Timestamp.valueOf(LocalDateTime.now());
+            var user = invoiceManagementBackend.entity.User.builder().build();
+
+            if (request.getRole().equals("biller")) {
+                var biller = Biller.builder().build();
+                String code = commonUtil.generateCode();
+
+                biller.setName(request.getName());
+                biller.setLastname(request.getLastname());
+                biller.setPhone(request.getPhone());
+                biller.setIsCitizen(request.getIsCitizen());
+                biller.setCitizenId(request.getCitizenId());
+                biller.setTaxId(request.getTaxId());
+                biller.setAddressDetail(request.getAddressDetail());
+                biller.setRoad(request.getRoad());
+                biller.setSubDistrict(request.getSubDistrict());
+                biller.setDistrict(request.getDistrict());
+                biller.setProvince(request.getProvince());
+                biller.setZipCode(request.getZipCode());
+                biller.setCode(code);
+                biller.setCreatedAt(now);
+                biller.setProfileId(profileId);
+                user.setBillerProfileId(profileId);
+                user.setRole("biller");
+
+                billerRepository.save(biller);
+                billerCreateResponse.setBiller(biller);
+                userCreateResponse.setBiller(billerCreateResponse);
+            } else {
+
+                var payer = Payer.builder().build();
+                payer.setName(request.getName());
+                payer.setLastname(request.getLastname());
+                payer.setPhone(request.getPhone());
+                payer.setIsCitizen(request.getIsCitizen());
+                payer.setCitizenId(request.getCitizenId());
+                payer.setTaxId(request.getTaxId());
+                payer.setAddressDetail(request.getAddressDetail());
+                payer.setRoad(request.getRoad());
+                payer.setSubDistrict(request.getSubDistrict());
+                payer.setDistrict(request.getDistrict());
+                payer.setProvince(request.getProvince());
+                payer.setZipCode(request.getZipCode());
+                payer.setCreatedAt(now);
+                payer.setProfileId(profileId);
+                user.setPayerProfileId(profileId);
+                user.setRole("payer");
+
+                payerRepository.save(payer);
+                payerCreateResponse.setPayer(payer);
+                userCreateResponse.setPayer(payerCreateResponse);
+            }
+
+            user.setUsername(request.getUsername());
+            user.setPassword(request.getPassword());
+            userRepository.save(user);
+
         } else {
-            throw new Exception("Invalid password");
-        }
-        String profileId = commonUtil.generateCode();
-        Timestamp now = Timestamp.valueOf(LocalDateTime.now());
-        var user = invoiceManagementBackend.entity.User.builder().build();
-
-        if (request.getRole().equals("biller")) {
-            var biller = Biller.builder().build();
-            String code = commonUtil.generateCode();
-
-            biller.setName(request.getName());
-            biller.setLastname(request.getLastname());
-            biller.setPhone(request.getPhone());
-            biller.setIsCitizen(request.getIsCitizen());
-            biller.setCitizenId(request.getCitizenId());
-            biller.setTaxId(request.getTaxId());
-            biller.setAddressDetail(request.getAddressDetail());
-            biller.setRoad(request.getRoad());
-            biller.setSubDistrict(request.getSubDistrict());
-            biller.setDistrict(request.getDistrict());
-            biller.setProvince(request.getProvince());
-            biller.setZipCode(request.getZipCode());
-            biller.setCode(code);
-            biller.setCreatedAt(now);
-            biller.setProfileId(profileId);
-            user.setBillerProfileId(profileId);
-            user.setRole("biller");
-
-            billerRepository.save(biller);
-        } else {
-            var payer = Payer.builder().build();
-            payer.setName(request.getName());
-            payer.setLastname(request.getLastname());
-            payer.setPhone(request.getPhone());
-            payer.setIsCitizen(request.getIsCitizen());
-            payer.setCitizenId(request.getCitizenId());
-            payer.setTaxId(request.getTaxId());
-            payer.setAddressDetail(request.getAddressDetail());
-            payer.setRoad(request.getRoad());
-            payer.setSubDistrict(request.getSubDistrict());
-            payer.setDistrict(request.getDistrict());
-            payer.setProvince(request.getProvince());
-            payer.setZipCode(request.getZipCode());
-            payer.setCreatedAt(now);
-            payer.setProfileId(profileId);
-            user.setPayerProfileId(profileId);
-            user.setRole("payer");
-
-            payerRepository.save(payer);
+            status.setCode("3001");
+            status.setDescription("Invalid password.");
         }
 
-        user.setUsername(request.getUsername());
-        user.setPassword(request.getPassword());
-
-        userRepository.save(user);
+        userCreateResponse.setStatus(status);
+        return userCreateResponse;
     }
 
     public User findByUsername(String username) {

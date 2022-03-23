@@ -1,7 +1,7 @@
 package invoiceManagementBackend.controller.authorization;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import invoiceManagementBackend.model.authentication.register.request.UserCreateRequest;
+import invoiceManagementBackend.model.create.response.UserCreateResponse;
 import invoiceManagementBackend.model.update.request.ChangePasswordRequest;
 import invoiceManagementBackend.service.authentication.UserService;
 import invoiceManagementBackend.util.CommonUtil;
@@ -20,12 +20,14 @@ public class UserController {
     @Autowired
     CommonUtil commonUtil;
 
-    public ResponseEntity<String> userCreate(@RequestBody UserCreateRequest request) throws Exception {
-        userService.createUser(request);
-        if (request.getRole().equals("biller")) {
-            return ResponseEntity.ok("Create biller successfully.");
-        }
-        return ResponseEntity.ok("Create payer successfully.");
+    public ResponseEntity<UserCreateResponse> userCreate(@RequestBody UserCreateRequest request) throws Exception {
+        var response = userService.createUser(request);
+        return ResponseEntity.ok(response);
+
+//        if (request.getRole().equals("biller")) {
+//            return ResponseEntity.ok("Create biller successfully.");
+//        }
+//        return ResponseEntity.ok("Create payer successfully.");
     }
 
     @PostMapping("/password-update")

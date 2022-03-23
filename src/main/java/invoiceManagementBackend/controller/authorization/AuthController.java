@@ -59,7 +59,7 @@ public class AuthController {
     CommonUtil commonUtil;
 
     @PostMapping(value = "/register")
-    public ResponseEntity<String> register(@RequestBody UserCreateRequest request) throws Exception {
+    public ResponseEntity<?> register(@RequestBody UserCreateRequest request) throws Exception {
         return userController.userCreate(request);
     }
 
