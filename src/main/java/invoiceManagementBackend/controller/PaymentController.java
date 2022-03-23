@@ -1,6 +1,11 @@
 package invoiceManagementBackend.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import invoiceManagementBackend.model.inquiry.detailInquiry.request.PaymentDetailInquiryRequest;
+import invoiceManagementBackend.model.inquiry.detailInquiry.response.PaymentDetailInquiryResponse;
+import invoiceManagementBackend.model.inquiry.request.PaymentInquiryRequest;
+import invoiceManagementBackend.model.inquiry.response.PaymentInquiryResponse;
 import invoiceManagementBackend.model.payment.request.CreateQrCodeRequest;
 import invoiceManagementBackend.model.payment.response.CreateQrCodeResponse;
 import invoiceManagementBackend.model.payment.slipVerify.request.SlipVerificationRequest;
@@ -22,6 +27,9 @@ public class PaymentController {
     @Autowired
     CommonUtil commonUtil;
 
+    @Autowired
+    ObjectMapper objectMapper;
+
     @PostMapping(value = "/payment/qrcode-create")
     public CreateQrCodeResponse CreateQrCode(@RequestBody CreateQrCodeRequest request
             , @RequestHeader("Authorization") String token) throws JsonProcessingException {
@@ -42,6 +50,17 @@ public class PaymentController {
             throw new AccessDeniedException("Access Denied.");
         }
         return paymentService.verifySlip(request);
+    }
+
+    @PostMapping(value = "/payment-inquiry")
+    public PaymentInquiryResponse inquiryPayment(@RequestBody PaymentInquiryRequest request) {
+        return paymentService.inquiryPayment(request);
+    }
+
+    @PostMapping(value = "/payment-detail-inquiry")
+    public PaymentDetailInquiryResponse inquiryPaymentDetail(@RequestBody PaymentDetailInquiryRequest request) {
+        log.info("request : {}", request.toString());
+        return paymentService.inquiryPaymentDetail(request);
     }
 
 }

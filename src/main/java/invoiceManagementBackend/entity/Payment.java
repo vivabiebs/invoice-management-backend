@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
+import java.sql.Timestamp;
 
 @Entity
 @Table(name = "payment", uniqueConstraints = {
@@ -27,6 +28,7 @@ public class Payment {
     private String ref1;
     private String ref2;
     private String ref3;
+    private Timestamp createdAt;
 
     @Nullable
     private String transRef;
@@ -42,8 +44,4 @@ public class Payment {
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "invoice_id")
     private Invoice invoice;
-
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "notification_id")
-    private Notification notification;
 }

@@ -6,6 +6,10 @@ import invoiceManagementBackend.entity.Invoice;
 import invoiceManagementBackend.entity.Payer;
 import invoiceManagementBackend.entity.Payment;
 import invoiceManagementBackend.model.create.request.NotificationCreateRequest;
+import invoiceManagementBackend.model.inquiry.detailInquiry.request.PaymentDetailInquiryRequest;
+import invoiceManagementBackend.model.inquiry.detailInquiry.response.PaymentDetailInquiryResponse;
+import invoiceManagementBackend.model.inquiry.request.PaymentInquiryRequest;
+import invoiceManagementBackend.model.inquiry.response.PaymentInquiryResponse;
 import invoiceManagementBackend.model.payment.request.CreateQrCodeRequest;
 import invoiceManagementBackend.model.payment.request.GetTokenRequest;
 import invoiceManagementBackend.model.payment.request.ScbCreateQrCodeRequest;
@@ -18,19 +22,20 @@ import invoiceManagementBackend.repository.InvoiceRepository;
 import invoiceManagementBackend.repository.PaymentRepository;
 import invoiceManagementBackend.util.CommonConstant;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.*;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -105,7 +110,7 @@ public class PaymentService {
 
         var ref1 = generateRefNumber();
         var ref2 = generateRefNumber();
-        var ref3 = generateRefNumber().concat("EKG");
+        var ref3 = "EKG";
         var scbRequest = ScbCreateQrCodeRequest.builder()
                 .qrType("PP")
                 .ppType("BILLERID")
@@ -129,20 +134,6 @@ public class PaymentService {
             invoice.setRef1(ref1);
             invoiceRepository.save(invoice);
         }
-
-//        var payment = Payment.builder()
-//                .invoice(invoice)
-//                .biller(invoice.getBiller())
-//                .payer(invoice.getPayer())
-//                .ref1(ref1)
-//                .ref2(ref2)
-//                .ref3(ref3)
-//                .build();
-//
-//        if (qrResponse.getStatusCodeValue() == 200) {
-//            paymentRepository.save(payment);
-//        }
-
         return qrResponse.getBody();
     }
 
@@ -206,8 +197,17 @@ public class PaymentService {
             Objects.requireNonNull(response.getBody()).getData().getReceiver().setDisplayName(billerName);
             Objects.requireNonNull(response.getBody()).getData().getSender().setName(payerName);
             Objects.requireNonNull(response.getBody()).getData().getSender().setDisplayName(payerName);
+            Objects.requireNonNull(response.getBody()).getData().setTransTime(now.toString());
+            Objects.requireNonNull(response.getBody()).getData().setTransDate(LocalDate.now().toString());
 
             var ref1 = response.getBody().getData().getRef1();
+            var ref2 = response.getBody().getData().getRef2();
+            var ref3 = response.getBody().getData().getRef3();
+            var transRefResponse = response.getBody().getData().getTransRef();
+
+            if (ObjectUtils.isEmpty(invoice.getRef1())) {
+                invoice.setRef1("");
+            }
 
             if (invoice.getRef1().equals(ref1)) {
                 // correct
@@ -223,20 +223,82 @@ public class PaymentService {
                             .build();
 
                     notificationService.createNotification(notificationCreateRequest, CommonConstant.INVOICE_PAID);
+
+                    var payment = Payment.builder()
+                            .invoice(invoice)
+                            .biller(invoice.getBiller())
+                            .payer(invoice.getPayer())
+                            .ref1(ref1)
+                            .ref2(ref2)
+                            .ref3(ref3)
+                            .transRef(transRefResponse)
+                            .createdAt(now)
+                            .build();
+                    paymentRepository.save(payment);
                 }
             } else {
                 //already exists
                 response.getBody()
-                        .setStatus(Status.builder()
-                                .code("2000")
-                                .description("TransRef doesn't match by invoice id")
-                                .build());
-
+                        .setStatus(
+                                Status.builder()
+                                        .code("2001")
+                                        .description("TransRef doesn't match by invoice id")
+                                        .build());
                 response.getBody().setData(null);
             }
-
         }
-
         return response.getBody();
     }
+
+    public PaymentInquiryResponse inquiryPayment(PaymentInquiryRequest request) {
+        var paymentInquiryResponse = PaymentInquiryResponse.builder().build();
+        List<Payment> payments = new ArrayList<>();
+        List<PaymentDetailInquiryResponse>
+                inquiryResponses = new ArrayList<>();
+        Sort sortBy = Sort.by(Sort.Direction.DESC, "createdAt");
+        if (request.getBillerId() != 0) {
+            Biller biller = billerService.getBiller(request.getBillerId());
+            payments = paymentRepository.findAllByBiller(biller, sortBy);
+        } else if (request.getPayerId() != 0) {
+            Payer payer = payerService.getPayer(request.getPayerId());
+            payments = paymentRepository.findAllByPayer(payer, sortBy);
+        }
+
+        payments.forEach(payment -> {
+            var paymentDetailInquiryResponse = PaymentDetailInquiryResponse.builder().build();
+            paymentDetailInquiryResponse.setId(payment.getId());
+            paymentDetailInquiryResponse.setBillerId(payment.getBiller().getId());
+            paymentDetailInquiryResponse.setPayerId(payment.getPayer().getId());
+            paymentDetailInquiryResponse.setInvoiceId(payment.getInvoice().getId());
+            paymentDetailInquiryResponse.setRef1(payment.getRef1());
+            paymentDetailInquiryResponse.setRef2(payment.getRef2());
+            paymentDetailInquiryResponse.setRef3(payment.getRef3());
+            paymentDetailInquiryResponse.setTransRef(payment.getTransRef());
+            paymentDetailInquiryResponse.setAmount(payment.getInvoice().getTotalAmountAddedTax());
+            paymentDetailInquiryResponse.setPaidAt(payment.getCreatedAt());
+
+            inquiryResponses.add(paymentDetailInquiryResponse);
+        });
+
+        paymentInquiryResponse.setPayments(inquiryResponses);
+        return paymentInquiryResponse;
+    }
+
+    public PaymentDetailInquiryResponse inquiryPaymentDetail(PaymentDetailInquiryRequest request){
+        var payment = paymentRepository.findById(request.getId());
+        return invoiceManagementBackend.model.inquiry.detailInquiry
+                .response.PaymentDetailInquiryResponse.builder()
+                .id(payment.getId())
+                .billerId(payment.getBiller().getId())
+                .payerId(payment.getPayer().getId())
+                .invoiceId(payment.getInvoice().getId())
+                .ref1(payment.getRef1())
+                .ref2(payment.getRef2())
+                .ref3(payment.getRef3())
+                .transRef(payment.getTransRef())
+                .amount(payment.getInvoice().getTotalAmountAddedTax())
+                .paidAt(payment.getCreatedAt())
+                .build();
+    }
+
 }

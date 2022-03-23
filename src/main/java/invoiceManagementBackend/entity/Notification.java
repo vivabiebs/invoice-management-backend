@@ -32,9 +32,6 @@ public class Notification {
     @JoinColumn(name = "invoice_id")
     private Invoice invoice;
 
-    @OneToMany(mappedBy = "invoice")
-    private java.util.List<Payment> payments;
-
     private Timestamp createdAt;
     private Timestamp deletedAt;
 

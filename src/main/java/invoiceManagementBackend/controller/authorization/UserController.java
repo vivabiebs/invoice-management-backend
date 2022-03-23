@@ -23,11 +23,6 @@ public class UserController {
     public ResponseEntity<UserCreateResponse> userCreate(@RequestBody UserCreateRequest request) throws Exception {
         var response = userService.createUser(request);
         return ResponseEntity.ok(response);
-
-//        if (request.getRole().equals("biller")) {
-//            return ResponseEntity.ok("Create biller successfully.");
-//        }
-//        return ResponseEntity.ok("Create payer successfully.");
     }
 
     @PostMapping("/password-update")

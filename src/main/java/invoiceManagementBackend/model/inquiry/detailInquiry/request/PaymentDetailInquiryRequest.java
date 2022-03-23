@@ -1,4 +1,4 @@
-package invoiceManagementBackend.model.payment.request;
+package invoiceManagementBackend.model.inquiry.detailInquiry.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CreateQrCodeRequest {
-    private int invoiceId;
-    private double amount;
+public class PaymentDetailInquiryRequest {
+    private int id;
 }
