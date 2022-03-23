@@ -24,9 +24,7 @@ public class LandingController {
 
     @PostMapping("/landing")
     public ResponseEntity<LandingResponse> landing(@RequestHeader("Authorization") String token) throws JsonProcessingException {
-
         User user  = commonUtil.getUser(token);
-
         var response = landingService.landing(user);
         return ResponseEntity.ok(response);
     }

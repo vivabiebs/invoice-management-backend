@@ -54,7 +54,6 @@ public class LandingService {
             landingResponse.setPayer(payerDetail);
         }
 
-
         List<Invoice> invoices = new ArrayList<>();
 
 //        if (request.getBillerId() != 0) {

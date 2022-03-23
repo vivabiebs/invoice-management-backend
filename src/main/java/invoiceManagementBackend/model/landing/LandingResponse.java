@@ -3,18 +3,17 @@ package invoiceManagementBackend.model.landing;
 import com.sun.istack.Nullable;
 import invoiceManagementBackend.model.inquiry.detailInquiry.response.BillerDetailInquiryResponse;
 import invoiceManagementBackend.model.inquiry.detailInquiry.response.PayerDetailInquiryResponse;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Builder
-//@NoArgsConstructor
-//@AllArgsConstructor
+@NoArgsConstructor
+@AllArgsConstructor
 public class LandingResponse {
-    @Nullable
     private BillerDetailInquiryResponse biller;
-
-    @Nullable
     private PayerDetailInquiryResponse payer;
 
     @Nullable
