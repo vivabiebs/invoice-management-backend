@@ -36,5 +36,6 @@ public class LandingResponse {
     @Nullable
     private double totalExpensesThisYear;
 
-    private NotificationUnreadCountResponse unreadCountResponse;
+//    private NotificationUnreadCountResponse unreadCountResponse;
+    private int unreadCount;
 }

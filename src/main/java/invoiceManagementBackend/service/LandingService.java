@@ -71,7 +71,7 @@ public class LandingService {
         }
 
         unreadCountResponse = notificationService.getUnreadCount(notificationInquiryRequest);
-        landingResponse.setUnreadCountResponse(unreadCountResponse);
+        landingResponse.setUnreadCount(unreadCountResponse.getUnreadCount());
 
         Timestamp now = Timestamp.valueOf(LocalDateTime.now());
 
