@@ -11,4 +11,5 @@ public class NotificationCreateRequest {
     private int billerId;
     private int payerId;
     private int invoiceId;
+    private boolean toBiller;
 }

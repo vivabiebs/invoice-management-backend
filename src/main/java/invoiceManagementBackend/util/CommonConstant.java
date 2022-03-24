@@ -10,4 +10,5 @@ public class CommonConstant {
     public static final String INVOICE_CANCELLED = "cancelled";
     public static final String CORRECTION_REQUEST = "correctionRequested";
     public static final String OVERDUE = "overdue";
+    public static final String RELATIONSHIP_CREATED = "relationship_created";
 }

@@ -48,23 +48,44 @@ public class NotificationService {
         notification.setUnread(true);
         notification.setCreatedAt(Timestamp.valueOf(LocalDateTime.now()));
 
-        String invoiceId = " "+notification.getInvoice().getId()+" ";
+        String invoiceId = " " + notification.getInvoice().getId() + " ";
+        String billerName = " ";
+        String payerName = " ";
+
+        if (!biller.getLastname().isEmpty()) {
+            billerName = " biller : " + biller.getName() + " " + biller.getLastname();
+        } else {
+            billerName = " biller : " + biller.getName();
+        }
+
+        if (!payer.getLastname().isEmpty()) {
+            payerName = " payer : " + payer.getName() + " " + payer.getLastname();
+        } else {
+            payerName = " payer : " + payer.getName();
+        }
 
         switch (notificationCase) {
             case CommonConstant.INVOICE_CREATED:
-                notification.setMessage("ใบแจ้งหนี้เลขที่".concat(invoiceId).concat("ได้ถูกสร้างขึ้นแล้ว"));
+                notification.setMessage("Invoice No.".concat(invoiceId).concat("has been created."));
                 break;
             case CommonConstant.INVOICE_PAID:
-                notification.setMessage("ใบแจ้งหนี้เลขที่".concat(invoiceId).concat("ได้ถูกชำระเงินแล้ว"));
+                notification.setMessage("Invoice No.".concat(invoiceId).concat("has been paid."));
                 break;
             case CommonConstant.INVOICE_CANCELLED:
-                notification.setMessage("ใบแจ้งหนี้เลขที่".concat(invoiceId).concat("ได้ถูกยกเลิกแล้ว"));
+                notification.setMessage("Invoice No.".concat(invoiceId).concat("has been cancelled."));
                 break;
             case CommonConstant.CORRECTION_REQUEST:
-                notification.setMessage("ใบแจ้งหนี้เลขที่".concat(invoiceId).concat("ได้มีการส่งคำร้องเพื่อขอแก้ไขแล้ว"));
+                notification.setMessage("Invoice No.".concat(invoiceId).concat("has requested for correction."));
+                break;
+            case CommonConstant.OVERDUE:
+                notification.setMessage("Invoice No.".concat(invoiceId).concat("has been overdue."));
                 break;
             default:
-                notification.setMessage("ใบแจ้งหนี้เลขที่".concat(invoiceId).concat("ได้เกินกำหนดชำระแล้ว"));
+                if (request.isToBiller()) {
+                    notification.setMessage("You have been connected to".concat(payerName));
+                } else {
+                    notification.setMessage("You have been connected to".concat(billerName));
+                }
                 break;
         }
         notificationRepository.save(notification);

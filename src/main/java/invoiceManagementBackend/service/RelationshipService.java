@@ -3,6 +3,7 @@ package invoiceManagementBackend.service;
 import invoiceManagementBackend.entity.Biller;
 import invoiceManagementBackend.entity.Payer;
 import invoiceManagementBackend.entity.Relationship;
+import invoiceManagementBackend.model.create.request.NotificationCreateRequest;
 import invoiceManagementBackend.model.create.request.RelationshipCreateRequest;
 import invoiceManagementBackend.model.update.request.RelationShipStatusUpdateRequest;
 import invoiceManagementBackend.repository.RelationshipRepository;
@@ -25,6 +26,9 @@ public class RelationshipService {
 
     @Autowired
     PayerService payerService;
+
+    @Autowired
+    NotificationService notificationService;
 
     public void addRelationship(RelationshipCreateRequest request) {
         Relationship relationship = new Relationship();
