@@ -16,6 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -88,5 +90,55 @@ public class CommonUtil {
         } else
             return false;
 
+    }
+
+    public boolean checkIfInToday(Timestamp toCheck, Timestamp now) {
+        var toChecksDate = toCheck.toString().substring(0, 11);
+        var todaysDate = toCheck.toString().substring(0, 11);
+        log.info("day" + toChecksDate);
+        log.info("day" + todaysDate);
+
+        return toChecksDate.equals(todaysDate);
+    }
+
+    public boolean checkIfInThisMonth(Timestamp toCheck, Timestamp now) {
+        var toChecksMonth = toCheck.toString().substring(0, 7);
+        var thisMonth = toCheck.toString().substring(0, 7);
+        log.info("month" + toChecksMonth);
+        log.info("month" + thisMonth);
+
+        return toChecksMonth.equals(thisMonth);
+    }
+
+    public boolean checkIfInThisYear(Timestamp toCheck, Timestamp now) {
+        var toChecksYear = toCheck.toString().substring(0, 4);
+        var thisYear = toCheck.toString().substring(0, 4);
+        log.info("year" + toChecksYear);
+        log.info("year" + thisYear);
+
+        return toChecksYear.equals(thisYear);
+    }
+
+    public boolean checkIfOverdue(Date toCheck, Timestamp now) {
+        var toChecksYear = Integer.parseInt(toCheck.toString().substring(0, 4));
+        var thisYear = Integer.parseInt(now.toString().substring(0, 4));
+        var toChecksMonth = Integer.parseInt(toCheck.toString().substring(5, 7));
+        var thisMonth = Integer.parseInt(now.toString().substring(5, 7));
+        var toChecksDate = Integer.parseInt(toCheck.toString().substring(8, 10));
+        var toDaysDate = Integer.parseInt(now.toString().substring(8, 10));
+
+        log.info("----------day :{}", toChecksDate);
+        log.info("day" + toDaysDate);
+        log.info("month" + toChecksMonth);
+        log.info("month" + thisMonth);
+        log.info("year" + toChecksYear);
+        log.info("year" + thisYear);
+
+        if ((toChecksYear <= thisYear) && (toChecksMonth <= thisMonth) && (toChecksDate < toDaysDate)) {
+            log.info("over due");
+            return true;
+        } else {
+            return false;
+        }
     }
 }

@@ -35,7 +35,8 @@ public class Invoice {
     private String correctionRequest;
     private String ref1;
 
-    @OneToMany(mappedBy = "invoice")
+    @OneToMany(mappedBy = "invoice",
+            cascade = CascadeType.ALL)
     private java.util.List<List> lists;
 
     @ManyToOne(cascade = CascadeType.ALL)
@@ -46,9 +47,11 @@ public class Invoice {
     @JoinColumn(name = "payer_id")
     private Payer payer;
 
-    @OneToMany(mappedBy = "invoice")
+    @OneToMany(mappedBy = "invoice",
+            cascade = CascadeType.ALL)
     private Set<Notification> notifications;
 
-    @OneToMany(mappedBy = "invoice")
+    @OneToMany(mappedBy = "invoice",
+            cascade = CascadeType.ALL)
     private java.util.List<Payment> payments;
 }

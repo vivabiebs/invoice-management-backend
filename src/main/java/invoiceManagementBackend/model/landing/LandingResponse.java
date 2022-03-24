@@ -3,6 +3,8 @@ package invoiceManagementBackend.model.landing;
 import com.sun.istack.Nullable;
 import invoiceManagementBackend.model.inquiry.detailInquiry.response.BillerDetailInquiryResponse;
 import invoiceManagementBackend.model.inquiry.detailInquiry.response.PayerDetailInquiryResponse;
+import invoiceManagementBackend.model.inquiry.response.NotificationInquiryResponse;
+import invoiceManagementBackend.model.inquiry.response.NotificationUnreadCountResponse;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -33,4 +35,6 @@ public class LandingResponse {
 
     @Nullable
     private double totalExpensesThisYear;
+
+    private NotificationUnreadCountResponse unreadCountResponse;
 }

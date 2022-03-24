@@ -43,16 +43,20 @@ public class Biller {
     private Timestamp updatedAt;
     private String profileId;
 
-    @OneToMany(mappedBy = "biller")
+    @OneToMany(mappedBy = "biller",
+            cascade = CascadeType.ALL)
     private List<Relationship> relationships;
 
-    @OneToMany(mappedBy = "biller")
+    @OneToMany(mappedBy = "biller",
+            cascade = CascadeType.ALL)
     private List<Invoice> invoices;
 
-    @OneToMany(mappedBy = "biller")
+    @OneToMany(mappedBy = "biller",
+            cascade = CascadeType.ALL)
     private List<Notification> notifications;
 
-    @OneToMany(mappedBy = "biller")
+    @OneToMany(mappedBy = "biller",
+            cascade = CascadeType.ALL)
     private List<Payment> payments;
 
 }

@@ -18,9 +18,13 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Integer> {
 
     List<Invoice> findAllByPayer(Payer payer, Sort sort);
 
+    List<Invoice> findAllByPayer(Payer payer);
+
     List<Invoice> findAllByBillerAndStatus(Biller biller, String status, Sort sort);
 
     List<Invoice> findAllByBiller(Biller biller, Sort sort);
+
+    List<Invoice> findAllByBiller(Biller biller);
 
     List<Invoice> findAllByPayerAndPaidAtBetween(Payer payer, Timestamp dateFrom, Timestamp dateTo);
 }
