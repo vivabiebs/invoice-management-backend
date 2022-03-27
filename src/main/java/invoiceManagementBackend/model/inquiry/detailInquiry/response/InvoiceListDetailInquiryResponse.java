@@ -14,6 +14,8 @@ public class InvoiceListDetailInquiryResponse {
     private int id;
     private int billerId;
     private int payerId;
+    private String billerName;
+    private String payerName;
     private double totalAmount;
     private double totalAmountAddedTax;
     private double vat;

@@ -43,7 +43,6 @@ public class InvoiceService {
     NotificationService notificationService;
 
     public void createInvoice(InvoiceCreateRequest request) {
-        java.util.List<List> lists = new ArrayList<>();
         Invoice invoice = Invoice.builder().build();
 
         invoice.setTotalAmount(request.getTotalAmount());
@@ -62,7 +61,7 @@ public class InvoiceService {
         invoice.setPayer(payer);
         invoice.setCreatedAt(Timestamp.valueOf(LocalDateTime.now()));
 
-        lists.addAll(request.getLists());
+        java.util.List<List> lists = new ArrayList<>(request.getLists());
         for (List list : lists) {
             list.setInvoice(invoice);
         }
@@ -133,9 +132,30 @@ public class InvoiceService {
         java.util.List<InvoiceListDetailInquiryResponse.ListDetailResponse> listDetailResponses = new ArrayList<>();
 
         Invoice invoice = invoiceRepository.findById(request.getId());
+
+        var biller = invoice.getBiller();
+        var payer = invoice.getPayer();
+
+        String billerName;
+        String payerName;
+
+        if(ObjectUtils.isEmpty(biller.getLastname())){
+            billerName = biller.getName();
+        }else{
+            billerName = biller.getName().concat(" ").concat(biller.getLastname());
+        }
+
+        if(ObjectUtils.isEmpty(payer.getLastname())){
+            payerName = payer.getName();
+        }else{
+            payerName = payer.getName().concat(" ").concat(payer.getLastname());
+        }
+
         invoiceListDetailInquiryResponse.setId(invoice.getId());
-        invoiceListDetailInquiryResponse.setBillerId(invoice.getBiller().getId());
-        invoiceListDetailInquiryResponse.setPayerId(invoice.getPayer().getId());
+        invoiceListDetailInquiryResponse.setBillerId(biller.getId());
+        invoiceListDetailInquiryResponse.setBillerName(billerName);
+        invoiceListDetailInquiryResponse.setPayerId(payer.getId());
+        invoiceListDetailInquiryResponse.setPayerName(payerName);
         invoiceListDetailInquiryResponse.setTotalAmount(invoice.getTotalAmount());
         invoiceListDetailInquiryResponse.setTotalAmountAddedTax(invoice.getTotalAmountAddedTax());
         invoiceListDetailInquiryResponse.setVat(invoice.getVat());
