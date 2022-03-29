@@ -266,9 +266,27 @@ public class PaymentService {
 
         payments.forEach(payment -> {
             var paymentDetailInquiryResponse = PaymentDetailInquiryResponse.builder().build();
+            var biller = payment.getBiller();
+            var payer = payment.getPayer();
+
+            String billerName;
+            String payerName;
+
+            if(org.springframework.util.ObjectUtils.isEmpty(biller.getLastname())){
+                billerName = biller.getName();
+            }else{
+                billerName = biller.getName().concat(" ").concat(biller.getLastname());
+            }
+
+            if(org.springframework.util.ObjectUtils.isEmpty(payer.getLastname())){
+                payerName = payer.getName();
+            }else{
+                payerName = payer.getName().concat(" ").concat(payer.getLastname());
+            }
             paymentDetailInquiryResponse.setId(payment.getId());
-            paymentDetailInquiryResponse.setBillerId(payment.getBiller().getId());
-            paymentDetailInquiryResponse.setPayerId(payment.getPayer().getId());
+            paymentDetailInquiryResponse.setBillerName(billerName);
+            paymentDetailInquiryResponse.setPayerId(payer.getId());
+            paymentDetailInquiryResponse.setPayerName(payerName);
             paymentDetailInquiryResponse.setInvoiceId(payment.getInvoice().getId());
             paymentDetailInquiryResponse.setRef1(payment.getRef1());
             paymentDetailInquiryResponse.setRef2(payment.getRef2());

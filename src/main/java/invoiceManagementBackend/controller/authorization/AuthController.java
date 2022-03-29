@@ -90,11 +90,4 @@ public class AuthController {
         return ResponseEntity.ok(role);
     }
 
-    @PostMapping(value = "/user-info")
-    public ResponseEntity<GetUserTypeInfoResponse> getUserTypeInfo
-            (@Valid @RequestHeader("Authorization") String token) throws Exception {
-        var response = userService.getUserTypeInfo(token);
-        return ResponseEntity.ok(response);
-    }
-
 }

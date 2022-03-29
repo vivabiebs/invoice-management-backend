@@ -171,26 +171,4 @@ public class UserService implements UserDetailsService {
 
         }
     }
-
-    public GetUserTypeInfoResponse getUserTypeInfo(String token) throws JsonProcessingException {
-        var response = GetUserTypeInfoResponse.builder().build();
-        var user = commonUtil.getUser(token);
-        var userDetailInquiryRequest = UserDetailInquiryRequest
-                .builder().build();
-
-        if (user.getRole().equals("biller")) {
-            var biller = billerService.getBillerByProfileId(user.getBillerProfileId());
-            userDetailInquiryRequest.setId((biller.getId()));
-            var billerResponse = billerService.inquiryBillerDetail(userDetailInquiryRequest);
-            response.setBiller(billerResponse);
-
-        } else {
-            var payer = payerService.getPayerByProfileId(user.getPayerProfileId());
-            userDetailInquiryRequest.setId((payer.getId()));
-            var payerResponse = payerService.inquiryPayerDetail(userDetailInquiryRequest);
-            response.setPayer(payerResponse);
-        }
-
-        return response;
-    }
 }

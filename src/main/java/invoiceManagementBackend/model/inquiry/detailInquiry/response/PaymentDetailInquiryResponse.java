@@ -15,6 +15,8 @@ public class PaymentDetailInquiryResponse {
     private int id;
     private int billerId;
     private int payerId;
+    private String billerName;
+    private String payerName;
     private int invoiceId;
     private String ref1;
     private String ref2;

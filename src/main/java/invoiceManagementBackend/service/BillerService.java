@@ -3,7 +3,7 @@ package invoiceManagementBackend.service;
 import invoiceManagementBackend.entity.Biller;
 import invoiceManagementBackend.entity.Payer;
 import invoiceManagementBackend.entity.Relationship;
-import invoiceManagementBackend.model.inquiry.detailInquiry.request.UserDetailInquiryRequest;
+import invoiceManagementBackend.model.inquiry.detailInquiry.request.BillerDetailInquiryRequest;
 import invoiceManagementBackend.model.inquiry.detailInquiry.response.BillerDetailInquiryResponse;
 import invoiceManagementBackend.model.inquiry.request.BillerInquiryRequest;
 import invoiceManagementBackend.model.inquiry.response.BillerInquiryResponse;
@@ -12,6 +12,7 @@ import invoiceManagementBackend.repository.BillerRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -95,8 +96,15 @@ public class BillerService {
         return billerInquiryResponse;
     }
 
-    public BillerDetailInquiryResponse inquiryBillerDetail(UserDetailInquiryRequest request) {
-        Biller biller = billerRepository.findById(request.getId());
+    public BillerDetailInquiryResponse inquiryBillerDetail(BillerDetailInquiryRequest request) {
+        var biller = invoiceManagementBackend.entity.Biller.builder().build();
+        if (!ObjectUtils.isEmpty(request.getId())) {
+            biller = billerRepository.findById(request.getId());
+        }
+
+        if (!ObjectUtils.isEmpty(request.getCode())) {
+            biller = billerRepository.findByCode(request.getCode());
+        }
 
         return BillerDetailInquiryResponse.builder()
                 .id(biller.getId())

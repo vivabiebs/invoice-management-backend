@@ -5,6 +5,7 @@ import invoiceManagementBackend.entity.Invoice;
 import invoiceManagementBackend.entity.Payer;
 import invoiceManagementBackend.entity.User;
 import invoiceManagementBackend.model.create.request.NotificationCreateRequest;
+import invoiceManagementBackend.model.inquiry.detailInquiry.request.BillerDetailInquiryRequest;
 import invoiceManagementBackend.model.inquiry.detailInquiry.request.UserDetailInquiryRequest;
 import invoiceManagementBackend.model.inquiry.request.NotificationInquiryRequest;
 import invoiceManagementBackend.model.inquiry.response.NotificationUnreadCountResponse;
@@ -47,6 +48,7 @@ public class LandingService {
         var payer = Payer.builder().build();
         var biller = Biller.builder().build();
         var userDetailInquiryRequest = UserDetailInquiryRequest.builder().build();
+        var billerDetailInquiryRequest = BillerDetailInquiryRequest.builder().build();
         var notificationInquiryRequest = NotificationInquiryRequest.builder().build();
         var unreadCountResponse = NotificationUnreadCountResponse.builder().build();
         var ifBiller = false;
@@ -54,8 +56,8 @@ public class LandingService {
 
         if (user.getBillerProfileId() != null) {
             biller = billerService.getBillerByProfileId(user.getBillerProfileId());
-            userDetailInquiryRequest.setId(biller.getId());
-            var billerDetail = billerService.inquiryBillerDetail(userDetailInquiryRequest);
+            billerDetailInquiryRequest.setId(biller.getId());
+            var billerDetail = billerService.inquiryBillerDetail(billerDetailInquiryRequest);
             landingResponse.setBiller(billerDetail);
             notificationInquiryRequest.setBillerId(biller.getId());
             invoices = invoiceService.getInvoicesByBiller(biller);

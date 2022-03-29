@@ -2,6 +2,7 @@ package invoiceManagementBackend.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import invoiceManagementBackend.model.inquiry.detailInquiry.request.BillerDetailInquiryRequest;
 import invoiceManagementBackend.model.inquiry.detailInquiry.request.UserDetailInquiryRequest;
 import invoiceManagementBackend.model.inquiry.detailInquiry.response.BillerDetailInquiryResponse;
 import invoiceManagementBackend.model.inquiry.request.BillerInquiryRequest;
@@ -55,7 +56,7 @@ public class BillerController {
     }
 
     @PostMapping("/biller-detail-inquiry")
-    public ResponseEntity<BillerDetailInquiryResponse> billerDetailInquiry(@RequestBody UserDetailInquiryRequest request) {
+    public ResponseEntity<BillerDetailInquiryResponse> billerDetailInquiry(@RequestBody BillerDetailInquiryRequest request) {
         BillerDetailInquiryResponse billerInquiryResponse = billerService.inquiryBillerDetail(request);
         return ResponseEntity.ok(billerInquiryResponse);
     }

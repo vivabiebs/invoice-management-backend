@@ -107,9 +107,29 @@ public class InvoiceService {
         invoices.forEach(invoice -> {
             InvoiceInquiryResponse.InvoiceDetailInquiryResponse
                     detailInquiryResponse = new InvoiceInquiryResponse.InvoiceDetailInquiryResponse();
+            var biller = invoice.getBiller();
+            var payer = invoice.getPayer();
+
+            String billerName;
+            String payerName;
+
+            if(ObjectUtils.isEmpty(biller.getLastname())){
+                billerName = biller.getName();
+            }else{
+                billerName = biller.getName().concat(" ").concat(biller.getLastname());
+            }
+
+            if(ObjectUtils.isEmpty(payer.getLastname())){
+                payerName = payer.getName();
+            }else{
+                payerName = payer.getName().concat(" ").concat(payer.getLastname());
+            }
+
             detailInquiryResponse.setId(invoice.getId());
             detailInquiryResponse.setBillerId(invoice.getBiller().getId());
-            detailInquiryResponse.setPayerId(invoice.getPayer().getId());
+            detailInquiryResponse.setBillerName(billerName);
+            detailInquiryResponse.setPayerId(payer.getId());
+            detailInquiryResponse.setPayerName(payerName);
             detailInquiryResponse.setTotalAmount(invoice.getTotalAmount());
             detailInquiryResponse.setTotalAmountAddedTax(invoice.getTotalAmountAddedTax());
             detailInquiryResponse.setVat(invoice.getVat());
