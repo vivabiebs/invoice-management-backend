@@ -1,6 +1,9 @@
 package invoiceManagementBackend.model.inquiry.response;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
 import java.util.List;
@@ -33,5 +36,6 @@ public class PayerInquiryResponse {
         private Timestamp createdAt;
         private Timestamp deletedAt;
         private Timestamp updatedAt;
+        private String status;
     }
 }

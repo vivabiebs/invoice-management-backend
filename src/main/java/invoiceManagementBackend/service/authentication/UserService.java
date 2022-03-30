@@ -5,6 +5,7 @@ import invoiceManagementBackend.entity.Biller;
 import invoiceManagementBackend.entity.Payer;
 import invoiceManagementBackend.entity.User;
 import invoiceManagementBackend.model.authentication.login.response.GetUserTypeInfoResponse;
+import invoiceManagementBackend.model.authentication.register.request.CheckUsernameRequest;
 import invoiceManagementBackend.model.authentication.register.request.UserCreateRequest;
 import invoiceManagementBackend.model.create.response.BillerCreateResponse;
 import invoiceManagementBackend.model.create.response.PayerCreateResponse;
@@ -170,5 +171,9 @@ public class UserService implements UserDetailsService {
             throw new Exception("Invalid old password.");
 
         }
+    }
+
+    public boolean isUsernameExists(CheckUsernameRequest request) {
+        return !ObjectUtils.isEmpty(userRepository.findByUsername(request.getUsername()));
     }
 }

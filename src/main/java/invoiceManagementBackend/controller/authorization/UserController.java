@@ -1,5 +1,6 @@
 package invoiceManagementBackend.controller.authorization;
 
+import invoiceManagementBackend.model.authentication.register.request.CheckUsernameRequest;
 import invoiceManagementBackend.model.authentication.register.request.UserCreateRequest;
 import invoiceManagementBackend.model.create.response.UserCreateResponse;
 import invoiceManagementBackend.model.update.request.ChangePasswordRequest;
@@ -32,5 +33,11 @@ public class UserController {
         var user = commonUtil.getUser(token);
         userService.updatePassword(request, user);
         return ResponseEntity.ok("Changed password successfully.");
+    }
+
+    @PostMapping("/username-exists")
+    public ResponseEntity<Boolean> checkIfUsernameExists(@RequestBody CheckUsernameRequest request) {
+        var booleanResponse = userService.isUsernameExists(request);
+        return ResponseEntity.ok(booleanResponse);
     }
 }

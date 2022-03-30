@@ -15,8 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -60,32 +59,44 @@ public class PayerService {
 
     public PayerInquiryResponse inquiryPayer(PayerInquiryRequest request) {
         Biller biller = billerService.getBiller(request.getBillerId());
-        List<Relationship> relationships = relationshipService.getRelationshipByBiller(biller);
         PayerInquiryResponse payerInquiryResponse = new PayerInquiryResponse();
         List<PayerInquiryResponse.PayerInquiryDetailResponse> detailResponses = new ArrayList<>();
-        List<Payer> payers = new ArrayList<>();
+        List<Relationship> relationships = relationshipService.getRelationshipByBiller(biller);
+        HashMap<String, Payer> payerRelationshipStatusHashMap = new HashMap<>();
 
-        relationships.forEach(relationship -> payers.add(relationship.getPayer()));
+        relationships.forEach(relationship -> {
+            if (relationship.getStatus().equals("active")) {
+                payerRelationshipStatusHashMap.put("active", relationship.getPayer());
+            } else {
+                payerRelationshipStatusHashMap.put("inactive", relationship.getPayer());
+            }
+        });
 
-        payers.forEach(payer -> {
-            PayerInquiryResponse.PayerInquiryDetailResponse detailResponse
-                    = new PayerInquiryResponse.PayerInquiryDetailResponse();
-            detailResponse.setId(payer.getId());
-            detailResponse.setName(payer.getName());
-            detailResponse.setLastname(payer.getLastname());
-            detailResponse.setPhone(payer.getPhone());
-            detailResponse.setCitizenId(payer.getCitizenId());
-            detailResponse.setTaxId(payer.getTaxId());
-            detailResponse.setAddressDetail(payer.getAddressDetail());
-            detailResponse.setRoad(payer.getRoad());
-            detailResponse.setSubDistrict(payer.getSubDistrict());
-            detailResponse.setDistrict(payer.getDistrict());
-            detailResponse.setProvince(payer.getProvince());
-            detailResponse.setZipCode(payer.getZipCode());
-            detailResponse.setCreatedAt(payer.getCreatedAt());
-            detailResponse.setUpdatedAt(payer.getUpdatedAt());
-            detailResponse.setDeletedAt(payer.getDeletedAt());
-            detailResponses.add(detailResponse);
+        Set<String> statusSet = payerRelationshipStatusHashMap.keySet();
+        Collection<Payer> payers = payerRelationshipStatusHashMap.values();
+
+        statusSet.forEach(status -> {
+            payers.forEach(payer -> {
+                PayerInquiryResponse.PayerInquiryDetailResponse detailResponse
+                        = new PayerInquiryResponse.PayerInquiryDetailResponse();
+                detailResponse.setId(payer.getId());
+                detailResponse.setName(payer.getName());
+                detailResponse.setLastname(payer.getLastname());
+                detailResponse.setPhone(payer.getPhone());
+                detailResponse.setCitizenId(payer.getCitizenId());
+                detailResponse.setTaxId(payer.getTaxId());
+                detailResponse.setAddressDetail(payer.getAddressDetail());
+                detailResponse.setRoad(payer.getRoad());
+                detailResponse.setSubDistrict(payer.getSubDistrict());
+                detailResponse.setDistrict(payer.getDistrict());
+                detailResponse.setProvince(payer.getProvince());
+                detailResponse.setZipCode(payer.getZipCode());
+                detailResponse.setCreatedAt(payer.getCreatedAt());
+                detailResponse.setUpdatedAt(payer.getUpdatedAt());
+                detailResponse.setDeletedAt(payer.getDeletedAt());
+                detailResponse.setStatus(status);
+                detailResponses.add(detailResponse);
+            });
         });
 
         payerInquiryResponse.setPayers(detailResponses);

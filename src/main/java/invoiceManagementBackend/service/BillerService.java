@@ -16,8 +16,7 @@ import org.springframework.util.ObjectUtils;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 
 @Service
@@ -64,32 +63,44 @@ public class BillerService {
 
     public BillerInquiryResponse inquiryBiller(BillerInquiryRequest request) {
         Payer payer = payerService.getPayer(request.getPayerId());
-        List<Relationship> relationships = relationshipService.getRelationshipByPayer(payer);
         BillerInquiryResponse billerInquiryResponse = BillerInquiryResponse.builder().build();
         List<BillerInquiryResponse.BillerInquiryDetailResponse> detailResponses = new ArrayList<>();
-        List<Biller> billers = new ArrayList<>();
+        List<Relationship> relationships = relationshipService.getRelationshipByPayer(payer);
+        HashMap<String, Biller> billerRelationshipStatusHashMap = new HashMap<>();
 
-        relationships.forEach(relationship -> billers.add(relationship.getBiller()));
+        relationships.forEach(relationship -> {
+            if (relationship.getStatus().equals("active")) {
+                billerRelationshipStatusHashMap.put("active", relationship.getBiller());
+            } else {
+                billerRelationshipStatusHashMap.put("inactive", relationship.getBiller());
+            }
+        });
 
-        billers.forEach(biller -> {
-            BillerInquiryResponse.BillerInquiryDetailResponse detailResponse
-                    = BillerInquiryResponse.BillerInquiryDetailResponse.builder()
-                    .id(biller.getId())
-                    .name(biller.getName())
-                    .lastname(biller.getLastname())
-                    .phone(biller.getPhone())
-                    .citizenId(biller.getCitizenId())
-                    .taxId(biller.getTaxId())
-                    .addressDetail(biller.getAddressDetail())
-                    .road(biller.getRoad())
-                    .subDistrict(biller.getSubDistrict())
-                    .district(biller.getDistrict())
-                    .province(biller.getProvince())
-                    .zipCode(biller.getZipCode())
-                    .createdAt(biller.getCreatedAt())
-                    .updatedAt(biller.getUpdatedAt())
-                    .deletedAt(biller.getDeletedAt()).build();
-            detailResponses.add(detailResponse);
+        Set<String> statusSet = billerRelationshipStatusHashMap.keySet();
+        Collection<Biller> billers = billerRelationshipStatusHashMap.values();
+        statusSet.forEach(status -> {
+            billers.forEach(biller -> {
+                BillerInquiryResponse.BillerInquiryDetailResponse detailResponse
+                        = BillerInquiryResponse.BillerInquiryDetailResponse.builder()
+                        .id(biller.getId())
+                        .name(biller.getName())
+                        .lastname(biller.getLastname())
+                        .phone(biller.getPhone())
+                        .citizenId(biller.getCitizenId())
+                        .taxId(biller.getTaxId())
+                        .addressDetail(biller.getAddressDetail())
+                        .road(biller.getRoad())
+                        .subDistrict(biller.getSubDistrict())
+                        .district(biller.getDistrict())
+                        .province(biller.getProvince())
+                        .zipCode(biller.getZipCode())
+                        .createdAt(biller.getCreatedAt())
+                        .updatedAt(biller.getUpdatedAt())
+                        .deletedAt(biller.getDeletedAt())
+                        .status(status)
+                        .build();
+                detailResponses.add(detailResponse);
+            });
         });
 
         billerInquiryResponse.setBillers(detailResponses);
