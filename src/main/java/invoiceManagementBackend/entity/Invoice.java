@@ -1,9 +1,6 @@
 package invoiceManagementBackend.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.sql.Date;
@@ -35,6 +32,8 @@ public class Invoice {
     private String correctionRequest;
     private String ref1;
 
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     @OneToMany(mappedBy = "invoice",
             cascade = CascadeType.ALL)
     private java.util.List<List> lists;
@@ -47,10 +46,14 @@ public class Invoice {
     @JoinColumn(name = "payer_id")
     private Payer payer;
 
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     @OneToMany(mappedBy = "invoice",
             cascade = CascadeType.ALL)
     private Set<Notification> notifications;
 
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     @OneToMany(mappedBy = "invoice",
             cascade = CascadeType.ALL)
     private java.util.List<Payment> payments;
