@@ -1,6 +1,9 @@
 package invoiceManagementBackend.entity;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
@@ -24,7 +27,7 @@ public class List {
     private Timestamp deletedAt;
     private Timestamp updatedAt;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne()
     @JoinColumn(name = "invoice_id")
     private Invoice invoice;
 
