@@ -27,7 +27,7 @@ public class List {
     private Timestamp deletedAt;
     private Timestamp updatedAt;
 
-    @ManyToOne()
+    @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "invoice_id")
     private Invoice invoice;
 

@@ -35,7 +35,7 @@ public class Invoice {
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     @OneToMany(mappedBy = "invoice",
-            cascade = CascadeType.ALL)
+            cascade = CascadeType.MERGE)
     private java.util.List<List> lists;
 
     @ManyToOne(cascade = CascadeType.ALL)
