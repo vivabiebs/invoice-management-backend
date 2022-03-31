@@ -34,7 +34,7 @@ public class Invoice {
 
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
-    @OneToMany(mappedBy = "invoice",cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "invoice",cascade = CascadeType.ALL)
     private java.util.List<List> lists;
 
     @ManyToOne(cascade = CascadeType.ALL)
