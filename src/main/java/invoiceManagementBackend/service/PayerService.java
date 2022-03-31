@@ -15,7 +15,9 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -66,37 +68,48 @@ public class PayerService {
 
         relationships.forEach(relationship -> {
             if (relationship.getStatus().equals("active")) {
-                payerRelationshipStatusHashMap.put("active", relationship.getPayer());
-            } else {
-                payerRelationshipStatusHashMap.put("inactive", relationship.getPayer());
-            }
-        });
-
-        Set<String> statusSet = payerRelationshipStatusHashMap.keySet();
-        Collection<Payer> payers = payerRelationshipStatusHashMap.values();
-
-        statusSet.forEach(status -> {
-            payers.forEach(payer -> {
                 PayerInquiryResponse.PayerInquiryDetailResponse detailResponse
-                        = new PayerInquiryResponse.PayerInquiryDetailResponse();
-                detailResponse.setId(payer.getId());
-                detailResponse.setName(payer.getName());
-                detailResponse.setLastname(payer.getLastname());
-                detailResponse.setPhone(payer.getPhone());
-                detailResponse.setCitizenId(payer.getCitizenId());
-                detailResponse.setTaxId(payer.getTaxId());
-                detailResponse.setAddressDetail(payer.getAddressDetail());
-                detailResponse.setRoad(payer.getRoad());
-                detailResponse.setSubDistrict(payer.getSubDistrict());
-                detailResponse.setDistrict(payer.getDistrict());
-                detailResponse.setProvince(payer.getProvince());
-                detailResponse.setZipCode(payer.getZipCode());
-                detailResponse.setCreatedAt(payer.getCreatedAt());
-                detailResponse.setUpdatedAt(payer.getUpdatedAt());
-                detailResponse.setDeletedAt(payer.getDeletedAt());
-                detailResponse.setStatus(status);
+                        = PayerInquiryResponse.PayerInquiryDetailResponse.builder()
+                        .id(relationship.getPayer().getId())
+                        .name(relationship.getPayer().getName())
+                        .lastname(relationship.getPayer().getLastname())
+                        .phone(relationship.getPayer().getPhone())
+                        .citizenId(relationship.getPayer().getCitizenId())
+                        .taxId(relationship.getPayer().getTaxId())
+                        .addressDetail(relationship.getPayer().getAddressDetail())
+                        .road(relationship.getPayer().getRoad())
+                        .subDistrict(relationship.getPayer().getSubDistrict())
+                        .district(relationship.getPayer().getDistrict())
+                        .province(relationship.getPayer().getProvince())
+                        .zipCode(relationship.getPayer().getZipCode())
+                        .createdAt(relationship.getPayer().getCreatedAt())
+                        .updatedAt(relationship.getPayer().getUpdatedAt())
+                        .deletedAt(relationship.getPayer().getDeletedAt())
+                        .status("active")
+                        .build();
                 detailResponses.add(detailResponse);
-            });
+            } else {
+                PayerInquiryResponse.PayerInquiryDetailResponse detailResponse
+                        = PayerInquiryResponse.PayerInquiryDetailResponse.builder()
+                        .id(relationship.getPayer().getId())
+                        .name(relationship.getPayer().getName())
+                        .lastname(relationship.getPayer().getLastname())
+                        .phone(relationship.getPayer().getPhone())
+                        .citizenId(relationship.getPayer().getCitizenId())
+                        .taxId(relationship.getPayer().getTaxId())
+                        .addressDetail(relationship.getPayer().getAddressDetail())
+                        .road(relationship.getPayer().getRoad())
+                        .subDistrict(relationship.getPayer().getSubDistrict())
+                        .district(relationship.getPayer().getDistrict())
+                        .province(relationship.getPayer().getProvince())
+                        .zipCode(relationship.getPayer().getZipCode())
+                        .createdAt(relationship.getPayer().getCreatedAt())
+                        .updatedAt(relationship.getPayer().getUpdatedAt())
+                        .deletedAt(relationship.getPayer().getDeletedAt())
+                        .status("active")
+                        .build();
+                detailResponses.add(detailResponse);
+            }
         });
 
         payerInquiryResponse.setPayers(detailResponses);

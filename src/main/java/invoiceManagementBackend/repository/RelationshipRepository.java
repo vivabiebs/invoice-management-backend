@@ -15,5 +15,7 @@ public interface RelationshipRepository extends JpaRepository<Relationship, Inte
     List<Relationship> findAllByBiller(Biller biller);
 
     List<Relationship> findAllByPayer(Payer payer);
+
+    Relationship findByBillerAndPayer(Biller biller, Payer payer);
 }
 

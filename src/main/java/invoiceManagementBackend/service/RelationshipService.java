@@ -3,7 +3,6 @@ package invoiceManagementBackend.service;
 import invoiceManagementBackend.entity.Biller;
 import invoiceManagementBackend.entity.Payer;
 import invoiceManagementBackend.entity.Relationship;
-import invoiceManagementBackend.model.create.request.NotificationCreateRequest;
 import invoiceManagementBackend.model.create.request.RelationshipCreateRequest;
 import invoiceManagementBackend.model.update.request.RelationShipStatusUpdateRequest;
 import invoiceManagementBackend.repository.RelationshipRepository;
@@ -50,7 +49,9 @@ public class RelationshipService {
     }
 
     public void updateStatus(RelationShipStatusUpdateRequest request) {
-        Relationship relationship = relationshipRepository.findById(request.getId());
+        Biller biller = billerService.getBiller(request.getBillerId());
+        Payer payer = payerService.getPayer(request.getPayerId());
+        Relationship relationship = relationshipRepository.findByBillerAndPayer(biller, payer);
         if (relationship.getStatus().equals("active")) {
             relationship.setStatus("inactive");
         } else {

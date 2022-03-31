@@ -7,5 +7,6 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RelationShipStatusUpdateRequest {
-    private int id;
+    private int billerId;
+    private int payerId;
 }
