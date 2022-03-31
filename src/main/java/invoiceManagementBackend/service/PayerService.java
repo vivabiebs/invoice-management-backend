@@ -104,7 +104,7 @@ public class PayerService {
                         .createdAt(relationship.getPayer().getCreatedAt())
                         .updatedAt(relationship.getPayer().getUpdatedAt())
                         .deletedAt(relationship.getPayer().getDeletedAt())
-                        .status("active")
+                        .status("inactive")
                         .build();
                 detailResponses.add(detailResponse);
             }
