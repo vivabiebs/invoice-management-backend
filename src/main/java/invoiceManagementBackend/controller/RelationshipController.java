@@ -35,7 +35,7 @@ public class RelationshipController {
 
     @PostMapping("/relationship-status-update")
     public ResponseEntity<String> relationshipStatusUpdate(@RequestBody RelationShipStatusUpdateRequest request) {
-        relationshipService.updateStatus(request);
-        return ResponseEntity.ok("Update relationship status successfully.");
+        var response = relationshipService.updateStatus(request);
+        return ResponseEntity.ok(response);
     }
 }

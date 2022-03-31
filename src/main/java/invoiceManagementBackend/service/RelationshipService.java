@@ -48,15 +48,18 @@ public class RelationshipService {
         return relationshipRepository.findAllByPayer(payer);
     }
 
-    public void updateStatus(RelationShipStatusUpdateRequest request) {
+    public String updateStatus(RelationShipStatusUpdateRequest request) {
         Biller biller = billerService.getBiller(request.getBillerId());
         Payer payer = payerService.getPayer(request.getPayerId());
         Relationship relationship = relationshipRepository.findByBillerAndPayer(biller, payer);
         if (relationship.getStatus().equals("active")) {
             relationship.setStatus("inactive");
+            relationshipRepository.save(relationship);
+            return  "Update to inactive successfully.";
         } else {
             relationship.setStatus("active");
+            relationshipRepository.save(relationship);
+            return  "Update to active successfully.";
         }
-        relationshipRepository.save(relationship);
     }
 }
