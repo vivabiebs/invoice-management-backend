@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 @Service
@@ -64,7 +63,6 @@ public class PayerService {
         PayerInquiryResponse payerInquiryResponse = new PayerInquiryResponse();
         List<PayerInquiryResponse.PayerInquiryDetailResponse> detailResponses = new ArrayList<>();
         List<Relationship> relationships = relationshipService.getRelationshipByBiller(biller);
-        HashMap<String, Payer> payerRelationshipStatusHashMap = new HashMap<>();
 
         relationships.forEach(relationship -> {
             if (relationship.getStatus().equals("active")) {
