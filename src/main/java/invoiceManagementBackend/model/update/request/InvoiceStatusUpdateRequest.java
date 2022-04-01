@@ -10,4 +10,5 @@ public class InvoiceStatusUpdateRequest {
     private int id;
     private String status;
     private String correctionRequest;
+    private int refInvoiceNo;
 }

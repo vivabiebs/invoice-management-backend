@@ -10,6 +10,7 @@ import java.sql.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class InvoiceCreateRequest {
+    private int invoiceId;
     private int billerId;
     private int payerId;
     private double totalAmount;

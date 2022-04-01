@@ -37,6 +37,7 @@ public class InvoiceInquiryResponse {
         private Timestamp correctionRequestSentAt;
         private Timestamp updatedAt;
         private String correctionRequest;
+        private int refInvoiceNo;
     }
 
 }

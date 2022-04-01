@@ -28,6 +28,7 @@ public class InvoiceListDetailInquiryResponse {
     private Timestamp updatedAt;
     private String correctionRequest;
     private List<ListDetailResponse> lists;
+    private int refInvoiceNo;
 
     @Data
     @Builder

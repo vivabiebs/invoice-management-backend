@@ -17,7 +17,6 @@ import java.util.Set;
 @AllArgsConstructor
 public class Invoice {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
     private double totalAmount;
     private double totalAmountAddedTax;
@@ -31,6 +30,7 @@ public class Invoice {
     private Timestamp updatedAt;
     private String correctionRequest;
     private String ref1;
+    private int refInvoiceNo;
 
     @EqualsAndHashCode.Exclude
     @ToString.Exclude

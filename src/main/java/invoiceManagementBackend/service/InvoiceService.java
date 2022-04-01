@@ -45,6 +45,7 @@ public class InvoiceService {
     public void createInvoice(InvoiceCreateRequest request) {
         Invoice invoice = Invoice.builder().build();
 
+        invoice.setId(request.getInvoiceId());
         invoice.setTotalAmount(request.getTotalAmount());
         invoice.setTotalAmountAddedTax(request.getTotalAmountAddedTax());
         invoice.setVat(request.getVat());
@@ -113,15 +114,15 @@ public class InvoiceService {
             String billerName;
             String payerName;
 
-            if(ObjectUtils.isEmpty(biller.getLastname())){
+            if (ObjectUtils.isEmpty(biller.getLastname())) {
                 billerName = biller.getName();
-            }else{
+            } else {
                 billerName = biller.getName().concat(" ").concat(biller.getLastname());
             }
 
-            if(ObjectUtils.isEmpty(payer.getLastname())){
+            if (ObjectUtils.isEmpty(payer.getLastname())) {
                 payerName = payer.getName();
-            }else{
+            } else {
                 payerName = payer.getName().concat(" ").concat(payer.getLastname());
             }
 
@@ -141,6 +142,7 @@ public class InvoiceService {
             detailInquiryResponse.setCancelledAt(invoice.getCancelledAt());
             detailInquiryResponse.setUpdatedAt(invoice.getUpdatedAt());
             detailInquiryResponse.setCorrectionRequestSentAt(invoice.getCorrectionRequestSentAt());
+            detailInquiryResponse.setRefInvoiceNo(invoice.getRefInvoiceNo());
             inquiryResponses.add(detailInquiryResponse);
         });
         invoiceInquiryResponse.setInvoices(inquiryResponses);
@@ -159,15 +161,15 @@ public class InvoiceService {
         String billerName;
         String payerName;
 
-        if(ObjectUtils.isEmpty(biller.getLastname())){
+        if (ObjectUtils.isEmpty(biller.getLastname())) {
             billerName = biller.getName();
-        }else{
+        } else {
             billerName = biller.getName().concat(" ").concat(biller.getLastname());
         }
 
-        if(ObjectUtils.isEmpty(payer.getLastname())){
+        if (ObjectUtils.isEmpty(payer.getLastname())) {
             payerName = payer.getName();
-        }else{
+        } else {
             payerName = payer.getName().concat(" ").concat(payer.getLastname());
         }
 
@@ -187,6 +189,7 @@ public class InvoiceService {
         invoiceListDetailInquiryResponse.setCancelledAt(invoice.getCancelledAt());
         invoiceListDetailInquiryResponse.setUpdatedAt(invoice.getUpdatedAt());
         invoiceListDetailInquiryResponse.setCorrectionRequestSentAt(invoice.getCorrectionRequestSentAt());
+        invoiceListDetailInquiryResponse.setRefInvoiceNo(invoice.getRefInvoiceNo());
 
         java.util.List<List> lists = invoice.getLists();
         lists.forEach(list -> {
@@ -231,6 +234,11 @@ public class InvoiceService {
                 notificationService.createNotification(notificationCreateRequest, CommonConstant.INVOICE_PAID);
                 break;
         }
+
+        if (!ObjectUtils.isEmpty(request.getRefInvoiceNo())) {
+            invoice.setRefInvoiceNo(request.getRefInvoiceNo());
+        }
+
         invoice.setStatus(request.getStatus());
         invoiceRepository.save(invoice);
     }
